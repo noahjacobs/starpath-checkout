@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
 import {
   PaymentElement,
-  ExpressCheckoutElement,
   useCheckout
 } from '@stripe/react-stripe-js/checkout';
 import OrderSummary from './OrderSummary';
@@ -72,7 +71,6 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
   const [emailError, setEmailError] = useState(null);
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [expressCheckoutAvailable, setExpressCheckoutAvailable] = useState(false);
   const [orderData, setOrderData] = useState({
     pricing: { quantity: 1, unitPrice: 800, totalPrice: 800, tier: 'standard', discount: 0 },
     shipping: { free: true, economyPrice: 0, nextDayPrice: 500 },  // No economy for qty 1
@@ -145,28 +143,6 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
     setIsLoading(false);
   };
 
-  const handleExpressCheckoutReady = ({ availablePaymentMethods }) => {
-    setExpressCheckoutAvailable(!!availablePaymentMethods);
-  };
-
-  const handleExpressCheckout = async (event) => {
-    setIsLoading(true);
-    
-    try {
-      // The event contains payment method data from the express checkout
-      const confirmResult = await checkout.confirm();
-
-      if (confirmResult.type === 'error') {
-        setMessage(confirmResult.error.message);
-      }
-      // Success case - user will be redirected to return_url
-    } catch (error) {
-      setMessage(error.message || 'An error occurred during payment');
-    }
-
-    setIsLoading(false);
-  };
-
   return (
     <div className="checkout-layout">
       <div className="checkout-content">
@@ -180,31 +156,6 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
           {/* Contact & Payment Form */}
           <div className="checkout-form-section">
             <form id="checkout-form" onSubmit={handleSubmit}>
-              {/* Express Checkout (Apple Pay, Google Pay, etc.) */}
-              {/* <div className="express-checkout-section">
-                <ExpressCheckoutElement
-                  onReady={handleExpressCheckoutReady}
-                  onConfirm={handleExpressCheckout}
-                  options={{
-                    buttonTheme: {
-                      applePay: 'black',
-                      googlePay: 'black'
-                    },
-                    buttonHeight: 48,
-                    paymentMethods: {
-                      googlePay: 'always',
-                      applePay: 'always'
-                    }
-                  }}
-                />
-                
-                {expressCheckoutAvailable && (
-                  <div className="express-divider">
-                    <span>Or</span>
-                  </div>
-                )}
-              </div> */}
-              
               <div className="form-section">
                 <h3>Contact information</h3>
                 <EmailInput
