@@ -25,7 +25,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
   // Fetch pricing data - but don't automatically update state to prevent loops
   const fetchPricingInfo = async (qty) => {
     try {
-      const response = await fetch(`/pricing-info?quantity=${qty}`);
+      const response = await fetch(`/api/pricing-info?quantity=${qty}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();

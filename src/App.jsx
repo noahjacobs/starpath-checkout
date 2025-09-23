@@ -44,7 +44,7 @@ const Complete = () => {
     const urlParams = new URLSearchParams(queryString);
     const sessionId = urlParams.get('session_id');
 
-    fetch(`/session-status?session_id=${sessionId}`)
+    fetch(`/api/session-status?session_id=${sessionId}`)
       .then((res) => res.json())
       .then((data) => {
         setStatus(data.status);
@@ -110,7 +110,7 @@ const App = () => {
   // Create a stable function to fetch client secret - use useCallback to prevent infinite re-renders
   const fetchClientSecret = useCallback(async () => {
     try {
-      const response = await fetch('/create-checkout-session', {
+      const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
