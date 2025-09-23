@@ -181,7 +181,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
           <div className="checkout-form-section">
             <form id="checkout-form" onSubmit={handleSubmit}>
               {/* Express Checkout (Apple Pay, Google Pay, etc.) */}
-              <div className="express-checkout-section">
+              {/* <div className="express-checkout-section">
                 <ExpressCheckoutElement
                   onReady={handleExpressCheckoutReady}
                   onConfirm={handleExpressCheckout}
@@ -203,7 +203,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                     <span>Or</span>
                   </div>
                 )}
-              </div>
+              </div> */}
               
               <div className="form-section">
                 <h3>Contact information</h3>

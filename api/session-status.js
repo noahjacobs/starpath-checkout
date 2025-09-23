@@ -1,6 +1,3 @@
-// Load environment variables
-require('dotenv').config();
-
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-08-27.basil",
 });
