@@ -98,7 +98,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
         return prev;
       });
     }
-  }, []); // Remove setParentOrderData dependency to prevent infinite loops
+  }, [setParentOrderData]); // Include setParentOrderData dependency
 
   const checkoutState = useCheckout();
   

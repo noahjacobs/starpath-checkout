@@ -14,7 +14,7 @@ app.use(express.json());
 
 const YOUR_DOMAIN = "http://localhost:3000";
 
-app.post("/create-checkout-session", async (req, res) => {
+app.post(["/create-checkout-session", "/api/create-checkout-session"], async (req, res) => {
   const { quantity = 1, priceId } = req.body;
   
   // Determine the correct price based on quantity
@@ -49,7 +49,7 @@ app.post("/create-checkout-session", async (req, res) => {
 });
 
 // New endpoint to get pricing information
-app.get("/pricing-info", (req, res) => {
+app.get(["/pricing-info", "/api/pricing-info"], (req, res) => {
   const { quantity } = req.query;
   const qty = parseInt(quantity) || 1;
   
@@ -103,7 +103,7 @@ app.get("/pricing-info", (req, res) => {
   });
 });
 
-app.get("/session-status", async (req, res) => {
+app.get(["/session-status", "/api/session-status"], async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {expand: ["payment_intent"]});
 
    res.send({

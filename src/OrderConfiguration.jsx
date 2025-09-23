@@ -75,7 +75,8 @@ const OrderConfiguration = ({ onOrderChange }) => {
       onOrderChange(pricing, shipping, quantity, selectedShipping);
       isInitialized.current = true;
     }
-  }, []); // Empty dependency array to prevent infinite loops - initialization should only happen once
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // ^ Empty dependency array intentional - initialization should only happen once
 
   const handleQuantityChange = (newQuantity) => {
     const validQuantity = Math.max(1, Math.min(1000, newQuantity));
