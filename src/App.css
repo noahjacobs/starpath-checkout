@@ -496,6 +496,21 @@ button:disabled {
   line-height: 1.4;
 }
 
+/* Utility classes for responsive visibility */
+.hidden {
+  display: none;
+}
+
+.sm\:block {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .sm\:block {
+    display: block;
+  }
+}
+
 .quantity-display {
   font-size: 14px;
   color: var(--text-secondary);
