@@ -104,7 +104,7 @@ const Complete = () => {
 const App = () => {
   const [orderData, setOrderData] = useState({
     quantity: 1,
-    priceId: "price_1SAFHNKXDiHB9vqy3vKynK84"
+    priceId: "price_1SAfGiKXDiHB9vqy69zu2AbV"
   });
 
   // Create a stable function to fetch client secret - use useCallback to prevent infinite re-renders

@@ -72,7 +72,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [orderData, setOrderData] = useState({
-    pricing: { quantity: 1, unitPrice: 800, totalPrice: 800, tier: 'standard', discount: 0 },
+    pricing: { quantity: 1, unitPrice: 638, totalPrice: 638, tier: 'standard', discount: 0 },
     shipping: { free: true, economyPrice: 0, nextDayPrice: 500 },  // No economy for qty 1
     quantity: 1,
     selectedShipping: 'free'
@@ -176,6 +176,15 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                       type="text"
                       placeholder="Enter your full name"
                       required
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="company">Company (optional)</label>
+                    <input
+                      id="company"
+                      type="text"
+                      placeholder="Company or organization name"
                     />
                   </div>
                   

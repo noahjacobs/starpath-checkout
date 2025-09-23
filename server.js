@@ -22,9 +22,9 @@ app.post(["/create-checkout-session", "/api/create-checkout-session"], async (re
   if (priceId) {
     selectedPriceId = priceId;
   } else if (quantity >= 100) {
-    selectedPriceId = "price_1SAYrqKXDiHB9vqyc2HZvqCt"; // Bulk pricing (20% discount)
+    selectedPriceId = "price_1SAfGwKXDiHB9vqyZK6u2ro5"; // Bulk pricing (20% discount)
   } else {
-    selectedPriceId = "price_1SAFHNKXDiHB9vqy3vKynK84"; // Standard pricing
+    selectedPriceId = "price_1SAfGiKXDiHB9vqy69zu2AbV"; // Standard pricing
   }
 
   const session = await stripe.checkout.sessions.create({
@@ -55,9 +55,9 @@ app.get(["/pricing-info", "/api/pricing-info"], (req, res) => {
   
   let priceInfo = {
     quantity: qty,
-    unitPrice: 800.00, // $800 per unit for 1-99
-    totalPrice: 800.00 * qty,
-    priceId: "price_1SAFHNKXDiHB9vqy3vKynK84",
+    unitPrice: 638.00, // $638 per unit for 1-99
+    totalPrice: 638.00 * qty,
+    priceId: "price_1SAfGiKXDiHB9vqy69zu2AbV",
     tier: "standard",
     discount: 0
   };
@@ -65,9 +65,9 @@ app.get(["/pricing-info", "/api/pricing-info"], (req, res) => {
   if (qty >= 100) {
     priceInfo = {
       quantity: qty,
-      unitPrice: 640.00, // $640 per unit for 100+ (20% discount)
-      totalPrice: 640.00 * qty,
-      priceId: "price_1SAYrqKXDiHB9vqyc2HZvqCt",
+      unitPrice: 510.40, // $510.40 per unit for 100+ (20% discount off $638)
+      totalPrice: 510.40 * qty,
+      priceId: "price_1SAfGwKXDiHB9vqyZK6u2ro5",
       tier: "bulk",
       discount: 20
     };

@@ -30,9 +30,9 @@ export default async function handler(req, res) {
     if (priceId) {
       selectedPriceId = priceId;
     } else if (quantity >= 100) {
-      selectedPriceId = "price_1SAYrqKXDiHB9vqyc2HZvqCt"; // Bulk pricing (20% discount)
+      selectedPriceId = "price_1SAfGwKXDiHB9vqyZK6u2ro5"; // Bulk pricing (20% discount)
     } else {
-      selectedPriceId = "price_1SAFHNKXDiHB9vqy3vKynK84"; // Standard pricing
+      selectedPriceId = "price_1SAfGiKXDiHB9vqy69zu2AbV"; // Standard pricing
     }
 
     const session = await stripe.checkout.sessions.create({

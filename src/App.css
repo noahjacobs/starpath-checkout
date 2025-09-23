@@ -515,6 +515,9 @@ button:disabled {
   font-weight: 700;
   color: var(--text-primary);
   text-align: right;
+  align-self: flex-start;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .order-breakdown {

@@ -70,7 +70,7 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
         </div>
         <div className="product-details-summary">
           <div className="product-name-summary">
-            Starpath Solar
+            Starlight 65W EM
             {pricing.tier === 'bulk' && (
               <span className="bulk-indicator">Bulk Pricing</span>
             )}
@@ -103,7 +103,17 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
         <div className="breakdown-row">
           <span className="breakdown-label">
             Shipping
-            {shippingCost === 0 && <span className="shipping-note">(3-5 business days)</span>}
+            {shippingCost === 0 && (
+              <span className="shipping-note">
+                {(() => {
+                  const today = new Date();
+                  const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+                  return today > oct10 
+                    ? "(3-5 business days)"
+                    : "(ships October 10th, delivers October 13-15th)";
+                })()}
+              </span>
+            )}
           </span>
           <span className="breakdown-value">
             <div className="price-animation-wrapper">

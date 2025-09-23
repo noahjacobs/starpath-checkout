@@ -9,11 +9,11 @@ const OrderConfiguration = ({ onOrderChange }) => {
   // Provide immediate fallback data to prevent loading states
   const [pricing, setPricing] = useState({
     quantity: 1,
-    unitPrice: 800,
-    totalPrice: 800,
+    unitPrice: 638,
+    totalPrice: 638,
     tier: 'standard',
     discount: 0,
-    priceId: "price_1SAFHNKXDiHB9vqy3vKynK84"
+    priceId: "price_1SAfGiKXDiHB9vqy69zu2AbV"
   });
   
   const [shipping, setShipping] = useState({
@@ -38,9 +38,9 @@ const OrderConfiguration = ({ onOrderChange }) => {
       // Fallback pricing
       const fallbackPricing = {
         quantity: qty,
-        unitPrice: qty >= 100 ? 640.00 : 800.00,
-        totalPrice: (qty >= 100 ? 640.00 : 800.00) * qty,
-        priceId: qty >= 100 ? "price_1SAYrqKXDiHB9vqyc2HZvqCt" : "price_1SAFHNKXDiHB9vqy3vKynK84",
+        unitPrice: qty >= 100 ? 510.40 : 638.00,
+        totalPrice: (qty >= 100 ? 510.40 : 638.00) * qty,
+        priceId: qty >= 100 ? "price_1SAfGwKXDiHB9vqyZK6u2ro5" : "price_1SAfGiKXDiHB9vqy69zu2AbV",
         tier: qty >= 100 ? "bulk" : "standard",
         discount: qty >= 100 ? 20 : 0
       };
@@ -83,14 +83,14 @@ const OrderConfiguration = ({ onOrderChange }) => {
     setQuantity(validQuantity);
     
     // Calculate immediate pricing update
-    const unitPrice = validQuantity >= 100 ? 640 : 800;
+    const unitPrice = validQuantity >= 100 ? 510.40 : 638;
     const updatedPricing = {
       quantity: validQuantity,
       unitPrice: unitPrice,
       totalPrice: unitPrice * validQuantity,
       tier: validQuantity >= 100 ? 'bulk' : 'standard',
       discount: validQuantity >= 100 ? 20 : 0,
-      priceId: validQuantity >= 100 ? "price_1SAYrqKXDiHB9vqyc2HZvqCt" : "price_1SAFHNKXDiHB9vqy3vKynK84"
+      priceId: validQuantity >= 100 ? "price_1SAfGwKXDiHB9vqyZK6u2ro5" : "price_1SAfGiKXDiHB9vqy69zu2AbV"
     };
     
     // Calculate Next-Day Air pricing based on tiers
@@ -175,7 +175,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
     <div className="order-configuration">
       {/* Product Header */}
       <div className="product-header-compact">
-        <h2>Starpath Solar</h2>
+        <h2>Starlight 65W EM</h2>
         <p className="product-subtitle">Engineering Model • {formatCurrency(pricing.unitPrice)}/unit</p>
         {pricing.tier === 'bulk' && (
           <div className="volume-discount-badge">
@@ -278,7 +278,15 @@ const OrderConfiguration = ({ onOrderChange }) => {
               <div className="shipping-info">
                 <div className="shipping-details">
                   <div className="shipping-name">Free Shipping</div>
-                  <div className="shipping-time">3-5 business days</div>
+                  <div className="shipping-time">
+                    {(() => {
+                      const today = new Date();
+                      const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+                      return today > oct10 
+                        ? "3-5 business days"
+                        : "ships October 10th, delivers October 13-15th";
+                    })()}
+                  </div>
                 </div>
                 <div className="shipping-price">Free</div>
               </div>
