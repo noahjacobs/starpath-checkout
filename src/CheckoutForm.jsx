@@ -149,15 +149,10 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
   return (
     <div className="checkout-layout">
       {/* Mobile Images - Above Everything */}
-      <motion.div 
+      <div 
         className={`product-images-container mobile-images-first ${
           orderData.selectedProduct === '80W_FM' ? 'placeholder-mode' : 'images-mode'
         }`}
-        layout
-        transition={{ 
-          duration: 0.4, 
-          ease: [0.4, 0, 0.2, 1] 
-        }}
       >
         <AnimatePresence>
           {orderData.selectedProduct !== '80W_FM' && (
@@ -216,21 +211,16 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
       <div className="checkout-content">
         {/* Left Column: Images + Contact & Payment */}
         <div className="checkout-left-column">
           {/* Product Images Container */}
-          <motion.div 
+          <div 
             className={`product-images-container desktop-images ${
               orderData.selectedProduct === '80W_FM' ? 'placeholder-mode' : 'images-mode'
             }`}
-            layout
-            transition={{ 
-              duration: 0.4, 
-              ease: [0.4, 0, 0.2, 1] 
-            }}
           >
             <AnimatePresence>
               {orderData.selectedProduct !== '80W_FM' && (
@@ -289,25 +279,15 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
           
           {/* Contact & Payment Form */}
-          <motion.div 
+          <div 
             className="checkout-form-section"
-            layout
-            transition={{ 
-              duration: 0.4, 
-              ease: [0.4, 0, 0.2, 1] 
-            }}
           >
             <form id="checkout-form" onSubmit={handleSubmit}>
-              <motion.div 
+              <div 
                 className="form-section"
-                layout
-                transition={{ 
-                  duration: 0.4, 
-                  ease: [0.4, 0, 0.2, 1]
-                }}
               >
                 <h3>Contact information</h3>
                 <EmailInput
@@ -317,15 +297,10 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                   placeholder="name@example.com"
                   setError={setEmailError}
                 />
-              </motion.div>
+              </div>
 
-              <motion.div 
+              <div 
                 className="form-section"
-                layout
-                transition={{ 
-                  duration: 0.4, 
-                  ease: [0.4, 0, 0.2, 1]
-                }}
               >
                 <h3>Shipping address</h3>
                 <div className="shipping-form">
@@ -395,31 +370,19 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div 
+              <div 
                 className="form-section"
-                layout
-                transition={{ 
-                  duration: 0.4, 
-                  ease: [0.4, 0, 0.2, 1]
-                }}
               >
                 <h3>Payment method</h3>
                 <PaymentElement id="payment-element" />
-              </motion.div>
+              </div>
               
-              <motion.button 
+              <button 
                 disabled={isLoading || !orderData.pricing} 
                 type="submit" 
                 className="form-submit-button"
-                layout
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ 
-                  duration: 0.4, 
-                  ease: [0.4, 0, 0.2, 1]
-                }}
               >
                 {isLoading ? (
                   <div className="button-spinner"></div>
@@ -444,50 +407,29 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                       })()
                     : `Complete Purchase`
                 )}
-              </motion.button>
+              </button>
               
               {message && <div className="payment-message">{message}</div>}
             </form>
-          </motion.div>
+          </div>
         </div>
         
         {/* Right Column: Order Configuration & Summary */}
-        <motion.div 
+        <div 
           className="checkout-right-column"
-          layout
-          transition={{ 
-            duration: 0.4, 
-            ease: [0.4, 0, 0.2, 1]
-          }}
         >
-          <motion.div 
+          <div 
             className="order-configuration-wrapper"
-            layout
-            transition={{ 
-              duration: 0.4, 
-              ease: [0.4, 0, 0.2, 1]
-            }}
           >
-            <motion.div
-              layout
-              transition={{ 
-                duration: 0.4, 
-                ease: [0.4, 0, 0.2, 1]
-              }}
-            >
+            <div>
               <OrderConfiguration 
                 onOrderChange={handleOrderChange} 
                 initialProduct={parentOrderData?.product || '65W_EM'} 
               />
-            </motion.div>
+            </div>
             
-            <motion.div 
+            <div 
               className="order-summary-wrapper"
-              layout
-              transition={{ 
-                duration: 0.4, 
-                ease: [0.4, 0, 0.2, 1]
-              }}
             >
               <OrderSummary 
                 pricing={orderData.pricing}
@@ -496,19 +438,14 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                 selectedShipping={orderData.selectedShipping}
                 selectedProduct={orderData.selectedProduct}
               />
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </div>
+          </div>
+        </div>
       </div>
       
       {/* Footer Branding */}
-      <motion.div 
+      <div 
         className="checkout-footer"
-        layout
-        transition={{ 
-          duration: 0.4, 
-          ease: [0.4, 0, 0.2, 1]
-        }}
       >
         <div className="footer-branding">
           <p className="footer-tagline">
@@ -516,7 +453,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
           </p>
           <p className="footer-copyright">@ 2025 Starpath Robotics</p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
