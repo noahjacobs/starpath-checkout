@@ -1,39 +1,31 @@
 import React, { useState, useEffect } from 'react';
 
+const images = [
+  {
+    id: 1,
+    title: 'Solar Array View',
+    src: '/images/2.jpeg'
+  },
+  {
+    id: 2,
+    title: 'Cell Detail',
+    src: '/images/3.jpeg'
+  },
+  {
+    id: 3,
+    title: 'Mars Installation',
+    src: '/images/4.jpeg'
+  },
+  {
+    id: 4,
+    title: 'Technical Specs',
+    src: '/images/5.jpeg'
+  }
+];
+
 const ImageCarousel = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [loadedImages, setLoadedImages] = useState({});
-
-  const images = [
-    {
-      id: 1,
-      title: 'Solar Array View',
-      src: '/images/2.jpeg',
-      fallbackGradient: 'linear-gradient(135deg, #1a2980 0%, #26d0ce 100%)',
-      icon: '🌟'
-    },
-    {
-      id: 2,
-      title: 'Cell Detail',
-      src: '/images/3.jpeg',
-      fallbackGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      icon: '🔬'
-    },
-    {
-      id: 3,
-      title: 'Mars Installation',
-      src: '/images/4.jpeg',
-      fallbackGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      icon: '🚀'
-    },
-    {
-      id: 4,
-      title: 'Technical Specs',
-      src: '/images/5.jpeg',
-      fallbackGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      icon: '⚡'
-    }
-  ];
 
   // Preload all images
   useEffect(() => {
@@ -75,20 +67,6 @@ const ImageCarousel = () => {
     
     return (
       <div className="carousel-image-container">
-        {/* Skeleton/placeholder while loading */}
-        <div 
-          className={`carousel-image-skeleton ${imageLoaded ? 'loaded' : ''}`}
-          style={{ 
-            background: image.fallbackGradient,
-          }}
-        >
-          <div className="carousel-image-overlay">
-            <div className="carousel-image-icon">{image.icon}</div>
-            <div className="carousel-image-title">{image.title}</div>
-          </div>
-        </div>
-        
-        {/* Actual image - render but keep hidden until loaded */}
         <img 
           src={image.src}
           alt={imageLoaded ? image.title : ""}
@@ -96,10 +74,6 @@ const ImageCarousel = () => {
           style={{
             opacity: imageLoaded ? 1 : 0,
             pointerEvents: imageLoaded ? 'auto' : 'none'
-          }}
-          onError={(e) => {
-            // Hide image if it fails to load, keeping skeleton visible
-            e.target.style.opacity = '0';
           }}
         />
       </div>
