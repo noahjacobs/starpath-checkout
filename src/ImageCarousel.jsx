@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ImageCarousel = () => {
   const [activeImage, setActiveImage] = useState(0);
+  const [loadedImages, setLoadedImages] = useState({});
 
   const images = [
     {
@@ -34,32 +35,76 @@ const ImageCarousel = () => {
     }
   ];
 
-  const generateImage = (image) => (
-    <div className="carousel-image-container">
-      <img 
-        src={image.src}
-        alt={image.title}
-        className="carousel-image"
-        onError={(e) => {
-          // Fallback to gradient if image fails to load
-          e.target.style.display = 'none';
-          e.target.nextElementSibling.style.display = 'flex';
-        }}
-      />
-      <div 
-        className="carousel-image-fallback"
-        style={{ 
-          background: image.fallbackGradient,
-          display: 'none'
-        }}
-      >
-        <div className="carousel-image-overlay">
-          <div className="carousel-image-icon">{image.icon}</div>
-          <div className="carousel-image-title">{image.title}</div>
+  // Preload all images
+  useEffect(() => {
+    const preloadImages = async () => {
+      const imagePromises = images.map((image) => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            setLoadedImages(prev => ({
+              ...prev,
+              [image.id]: true
+            }));
+            resolve(image.id);
+          };
+          img.onerror = () => {
+            // Still resolve even on error to prevent blocking
+            setLoadedImages(prev => ({
+              ...prev,
+              [image.id]: false
+            }));
+            resolve(image.id);
+          };
+          img.src = image.src;
+        });
+      });
+
+      try {
+        await Promise.all(imagePromises);
+      } catch (error) {
+        console.error('Error preloading images:', error);
+      }
+    };
+
+    preloadImages();
+  }, []);
+
+  const generateImage = (image) => {
+    const imageLoaded = loadedImages[image.id];
+    
+    return (
+      <div className="carousel-image-container">
+        {/* Skeleton/placeholder while loading */}
+        <div 
+          className={`carousel-image-skeleton ${imageLoaded ? 'loaded' : ''}`}
+          style={{ 
+            background: image.fallbackGradient,
+          }}
+        >
+          <div className="carousel-image-overlay">
+            <div className="carousel-image-icon">{image.icon}</div>
+            <div className="carousel-image-title">{image.title}</div>
+          </div>
         </div>
+        
+        {/* Actual image - render but keep hidden until loaded */}
+        <img 
+          src={image.src}
+          alt={imageLoaded ? image.title : ""}
+          className={`carousel-image ${imageLoaded ? 'loaded' : 'loading'}`}
+          style={{
+            opacity: imageLoaded ? 1 : 0,
+            pointerEvents: imageLoaded ? 'auto' : 'none'
+          }}
+          onError={(e) => {
+            // Hide image if it fails to load, keeping skeleton visible
+            e.target.style.opacity = '0';
+          }}
+        />
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="image-carousel">
