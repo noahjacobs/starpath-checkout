@@ -30,43 +30,45 @@ const images = [
 
 const ImageCarousel = () => {
   const [activeImage, setActiveImage] = useState(0);
-  const [loadedImages, setLoadedImages] = useState({});
+  const [loadedImages, setLoadedImages] = useState({
+    // Immediately show the first image as loaded to prevent blocking
+    [images[0].id]: true
+  });
 
-  // Preload all images
+  // Lazy load images progressively to avoid blocking main thread
   useEffect(() => {
-    const preloadImages = async () => {
-      const newLoadedImages = {};
+    const loadImageProgressively = (imageIndex) => {
+      if (imageIndex >= images.length) return;
       
-      const imagePromises = images.map((image) => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => {
-            newLoadedImages[image.id] = true;
-            resolve(image.id);
-          };
-          img.onerror = () => {
-            // Still resolve even on error to prevent blocking
-            newLoadedImages[image.id] = false;
-            resolve(image.id);
-          };
-          img.src = image.src;
-        });
-      });
-
-      try {
-        await Promise.all(imagePromises);
-        // Single state update instead of multiple updates
-        setLoadedImages(newLoadedImages);
-      } catch (error) {
-        console.error('Error preloading images:', error);
-        // Set all as failed in a single update
-        const failedImages = {};
-        images.forEach(img => failedImages[img.id] = false);
-        setLoadedImages(failedImages);
-      }
+      const image = images[imageIndex];
+      
+      const img = new Image();
+      img.onload = () => {
+        // Update state for this image individually (non-blocking)
+        setLoadedImages(prev => ({
+          ...prev,
+          [image.id]: true
+        }));
+        
+        // Load next image after a delay to prevent blocking
+        setTimeout(() => loadImageProgressively(imageIndex + 1), 200);
+      };
+      img.onerror = () => {
+        // Mark as failed but continue loading others
+        setLoadedImages(prev => ({
+          ...prev,
+          [image.id]: false
+        }));
+        
+        setTimeout(() => loadImageProgressively(imageIndex + 1), 100);
+      };
+      img.src = image.src;
     };
 
-    preloadImages();
+    // Start loading from second image (first is already "loaded")
+    const timeoutId = setTimeout(() => loadImageProgressively(1), 500);
+    
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const generateImage = React.useCallback((image) => {
