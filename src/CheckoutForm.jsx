@@ -148,12 +148,82 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
 
   return (
     <div className="checkout-layout">
+      {/* Mobile Images - Above Everything */}
+      <motion.div 
+        className={`product-images-container mobile-images-first ${
+          orderData.selectedProduct === '80W_FM' ? 'placeholder-mode' : 'images-mode'
+        }`}
+        layout
+        transition={{ 
+          duration: 0.4, 
+          ease: [0.4, 0, 0.2, 1] 
+        }}
+      >
+        <AnimatePresence>
+          {orderData.selectedProduct !== '80W_FM' && (
+            <motion.div 
+              className="product-images-section"
+              key="mobile-product-images"
+              layoutId="mobile-main-content"
+              initial={{ 
+                opacity: 0, 
+                y: -20 
+              }}
+              animate={{ 
+                opacity: 1, 
+                y: 0 
+              }}
+              exit={{ 
+                opacity: 0, 
+                y: -30 
+              }}
+              transition={{ 
+                duration: 0.4, 
+                ease: [0.4, 0, 0.2, 1] 
+              }}
+            >
+              <ImageCarousel />
+            </motion.div>
+          )}
+          
+          {orderData.selectedProduct === '80W_FM' && (
+            <motion.div 
+              className="preorder-placeholder"
+              key="mobile-preorder-placeholder"
+              layoutId="mobile-main-content"
+              initial={{ 
+                opacity: 0, 
+                y: 20 
+              }}
+              animate={{ 
+                opacity: 1, 
+                y: 0 
+              }}
+              exit={{ 
+                opacity: 0, 
+                y: -20 
+              }}
+              transition={{ 
+                duration: 0.4, 
+                ease: [0.4, 0, 0.2, 1] 
+              }}
+            >
+              <div className="preorder-content">
+                <h3>Starlight 80W FM</h3>
+                <p>Product images coming soon</p>
+                <div className="preorder-badge">Pre-Order • Ships Q4 2025</div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
       <div className="checkout-content">
         {/* Left Column: Images + Contact & Payment */}
         <div className="checkout-left-column">
           {/* Product Images Container */}
           <motion.div 
-            className={`product-images-container ${
+            className={`product-images-container desktop-images ${
               orderData.selectedProduct === '80W_FM' ? 'placeholder-mode' : 'images-mode'
             }`}
             layout

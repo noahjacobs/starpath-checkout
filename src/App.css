@@ -72,20 +72,25 @@ body {
   transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.product-images-container.images-mode {
-  min-height: 642px;
+/* .product-images-container.images-mode {
+  min-height: 500px;
+} */
+
+/* .product-images-container.placeholder-mode {
+  min-height: 280px;
+} */
+
+/* Desktop: Show desktop images, hide mobile */
+.mobile-images-first {
+  display: none;
 }
 
-.product-images-container.placeholder-mode {
-  min-height: 237px;
+.desktop-images {
+  display: block;
 }
 
 .product-images-section {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
+  position: relative;
   background: var(--bg-secondary);
   border-radius: 20px;
   padding: 24px;
@@ -95,11 +100,7 @@ body {
 
 /* Pre-order Placeholder */
 .preorder-placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
+  position: relative;
   background: var(--bg-secondary);
   border-radius: 20px;
   padding: 48px 24px;
@@ -108,7 +109,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
 }
 
 .preorder-content {
@@ -762,7 +762,7 @@ button:disabled {
   aspect-ratio: 4/3;
   border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   box-shadow: 0 8px 32px var(--shadow-dark);
 }
 
@@ -770,13 +770,15 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+  max-width: 320px;
+  margin: 0 auto;
 }
 
 .carousel-thumbnail {
   aspect-ratio: 1;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: none;
@@ -2156,6 +2158,20 @@ button:disabled {
     gap: 32px;
   }
   
+  /* Hide desktop images, show mobile images */
+  .desktop-images {
+    display: none;
+  }
+  
+  .mobile-images-first {
+    display: block;
+    order: -999;
+    position: static;
+    margin-bottom: 20px;
+    min-height: auto !important;
+  }
+  
+  
   .checkout-right-column {
     position: static;
     order: -1;
@@ -2164,9 +2180,10 @@ button:disabled {
     overflow-x: hidden;
   }
   
-  .product-images-section {
-    display: none; /* Hide images on mobile to focus on checkout */
+  .checkout-left-column {
+    order: 1;
   }
+  
   
   .form-row {
     grid-template-columns: 1fr;
@@ -2177,7 +2194,9 @@ button:disabled {
   }
   
   .carousel-thumbnails {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    max-width: 220px;
   }
   
   .footer-branding {
