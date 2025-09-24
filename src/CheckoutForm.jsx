@@ -81,7 +81,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
     selectedProduct: parentOrderData?.product || '65W_EM'
   });
 
-  // Move useCallback to the top, before any conditional returns
+  // Stable reference to prevent unnecessary re-renders - no dependencies needed since setParentOrderData is stable
   const handleOrderChange = useCallback((pricing, shipping, quantity, selectedShipping, selectedProduct) => {
     const newOrderData = { pricing, shipping, quantity, selectedShipping, selectedProduct };
     setOrderData(newOrderData);
@@ -90,16 +90,17 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
     if (setParentOrderData && pricing?.priceId) {
       setParentOrderData(prev => {
         // Only update if the data has actually changed
-        if (prev.quantity !== quantity || prev.priceId !== pricing.priceId) {
+        if (prev.quantity !== quantity || prev.priceId !== pricing.priceId || prev.product !== selectedProduct) {
           return {
             quantity: quantity,
-            priceId: pricing.priceId
+            priceId: pricing.priceId,
+            product: selectedProduct
           };
         }
         return prev;
       });
     }
-  }, [setParentOrderData]); // Include setParentOrderData dependency
+  }, [setParentOrderData]); // Empty dependencies - setParentOrderData should be stable from parent
 
   const checkoutState = useCheckout();
   

@@ -123,6 +123,10 @@ const App = () => {
     };
   });
 
+  // Extract stable values to prevent object reference changes from causing re-renders
+  const quantity = orderData.quantity;
+  const priceId = orderData.priceId;
+
   // Create a stable function to fetch client secret - use useCallback to prevent infinite re-renders
   const fetchClientSecret = useCallback(async () => {
     try {
@@ -132,8 +136,8 @@ const App = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          quantity: orderData.quantity,
-          priceId: orderData.priceId
+          quantity: quantity,
+          priceId: priceId
         }),
       });
       
@@ -150,7 +154,7 @@ const App = () => {
       }
       throw error;
     }
-  }, [orderData.quantity, orderData.priceId]); // Only recreate when these specific values change
+  }, [quantity, priceId]); // Use extracted primitive values instead of object properties
 
   const appearance = {
     theme: 'night',

@@ -71,52 +71,50 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
     nextDayPrice: 500
   });
 
-  // Fetch pricing data - but don't automatically update state to prevent loops
-  const fetchPricingInfo = async (qty) => {
-    try {
-      const response = await fetch(`/api/pricing-info?quantity=${qty}&product=${selectedProduct}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  // Stable reference for fetchPricingInfo to prevent recreation
+  // const fetchPricingInfo = useCallback(async (qty, productType) => {
+  //   try {
+  //     const response = await fetch(`/api/pricing-info?quantity=${qty}&product=${productType}`);
+  //     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
-      const data = await response.json();
-      // Only update pricing from backend, keep our shipping calculation
-      setPricing(data.pricing);
-      // Don't update shipping to preserve our correct frontend calculations
+  //     const data = await response.json();
+  //     // Only update pricing from backend if it's different to prevent flashing
+  //     setPricing(prevPricing => {
+  //       // Only update if there are actual differences to prevent unnecessary re-renders
+  //       if (!prevPricing || 
+  //           prevPricing.quantity !== data.pricing.quantity ||
+  //           prevPricing.unitPrice !== data.pricing.unitPrice ||
+  //           prevPricing.totalPrice !== data.pricing.totalPrice ||
+  //           prevPricing.tier !== data.pricing.tier ||
+  //           prevPricing.discount !== data.pricing.discount ||
+  //           prevPricing.priceId !== data.pricing.priceId) {
+  //         return data.pricing;
+  //       }
+  //       return prevPricing;
+  //     });
       
-    } catch (error) {
-      // Remove expensive console.error to prevent mobile performance issues
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error fetching pricing:', error);
-      }
-      // Fallback pricing using product specs
-      const specs = getProductSpecs(selectedProduct, qty);
-      const fallbackPricing = {
-        quantity: qty,
-        unitPrice: specs.unitPrice,
-        totalPrice: specs.unitPrice * qty,
-        priceId: specs.priceId,
-        tier: qty >= 100 ? "bulk" : "standard",
-        discount: specs.bulkDiscount
-      };
-      // Calculate Next-Day Air pricing based on tiers  
-      const calculateNextDayPrice = (qty) => {
-        if (qty <= 10) return 500;
-        if (qty <= 20) return 1000;
-        if (qty <= 30) return 1500;
-        
-        // For quantities > 30, add $500 for each additional 10-unit tier
-        const additionalTiers = Math.ceil((qty - 30) / 10);
-        return 1500 + (additionalTiers * 500);
-      };
-
-      const fallbackShipping = {
-        free: qty <= 10,
-        standardPrice: 0,
-        nextDayPrice: calculateNextDayPrice(qty)
-      };
-      setPricing(fallbackPricing);
-      setShipping(fallbackShipping);
-    }
-  };
+  //   } catch (error) {
+  //     // Remove expensive console.error to prevent mobile performance issues
+  //     if (process.env.NODE_ENV === 'development') {
+  //       console.error('Error fetching pricing:', error);
+  //     }
+  //     // Fallback pricing using product specs - only if we don't already have data
+  //     setPricing(prevPricing => {
+  //       if (!prevPricing || prevPricing.quantity !== qty) {
+  //         const specs = getProductSpecs(productType, qty);
+  //         return {
+  //           quantity: qty,
+  //           unitPrice: specs.unitPrice,
+  //           totalPrice: specs.unitPrice * qty,
+  //           priceId: specs.priceId,
+  //           tier: qty >= 100 ? "bulk" : "standard",
+  //           discount: specs.bulkDiscount
+  //         };
+  //       }
+  //       return prevPricing;
+  //     });
+  //   }
+  // }, []); // No dependencies needed - uses parameters directly
 
   // Initialize component ONCE when pricing and shipping are ready - but protect against multiple calls
   const isInitialized = React.useRef(false);
@@ -188,6 +186,8 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       standardPrice: 0,
       nextDayPrice: calculateNextDayPrice(validQuantity)
     };
+    
+    // Update pricing and shipping together to prevent intermediate states
     setPricing(updatedPricing);
     setShipping(updatedShipping);
     
@@ -221,10 +221,12 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
     // Immediately notify parent
     onOrderChange(updatedPricing, updatedShipping, validQuantity, newSelectedShipping, selectedProduct);
     
-    // Defer API call to prevent blocking main thread on mobile
-    setTimeout(() => {
-      fetchPricingInfo(validQuantity);
-    }, 1000); // 1 second delay to let UI render first
+    // Skip API call for now to prevent discount flashing - our frontend calculation should be accurate
+    // The API call was causing the volume discount to flash because it would overwrite our immediate calculation
+    // Comment out the deferred API call that was causing discount flashing:
+    // setTimeout(() => {
+    //   fetchPricingInfo(validQuantity, selectedProduct);
+    // }, 1000);
   };
 
   const handleShippingChange = (shippingType) => {
@@ -253,6 +255,8 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
     
     // Immediately notify parent
     onOrderChange(updatedPricing, shipping, quantity, selectedShipping, productType);
+    
+    // Skip API call to prevent flashing - frontend calculation should be accurate
   };
 
   if (!pricing || !shipping) {
