@@ -179,7 +179,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
         <p className="product-subtitle">Engineering Model • {formatCurrency(pricing.unitPrice)}/unit</p>
         {pricing.tier === 'bulk' && (
           <div className="volume-discount-badge">
-            <span className="discount-icon">🎉</span>
+            {/* <span className="discount-icon">🎉</span> */}
             <span>20% Volume Discount</span>
           </div>
         )}
