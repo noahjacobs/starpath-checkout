@@ -288,6 +288,16 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
           </div>
         </div>
       </div>
+      
+      {/* Footer Branding */}
+      <div className="checkout-footer">
+        <div className="footer-branding">
+          <p className="footer-tagline">
+            Engineered by Starpath for <span className="mars-text">Mars</span>. Flies Anywhere.
+          </p>
+          <p className="footer-copyright">@ 2025 Starpath Robotics</p>
+        </div>
+      </div>
     </div>
   );
 }

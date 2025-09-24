@@ -76,7 +76,7 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
             )}
           </div>
           <div className="product-meta hidden sm:block">
-            20% efficient, LEO-tough solar modules. {formatCurrency(pricing.unitPrice)}/W and below.
+            16% efficient, LEO-tough solar modules. {formatCurrency(pricing.unitPrice)}/W and below.
           </div>
           <div className="quantity-display">
             Qty {quantity} × {formatCurrency(pricing.unitPrice)}
@@ -111,6 +111,17 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
                   return today > oct10 
                     ? "(3-5 business days)"
                     : "(ships October 10th, delivers October 13-15th)";
+                })()}
+              </span>
+            )}
+            {selectedShipping === 'nextday' && (
+              <span className="shipping-note">
+                {(() => {
+                  const today = new Date();
+                  const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+                  return today > oct10 
+                    ? "(delivers next business day)"
+                    : "(ships October 10th, delivers next business day)";
                 })()}
               </span>
             )}

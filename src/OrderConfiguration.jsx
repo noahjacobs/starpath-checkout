@@ -240,7 +240,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
         {quantity < 100 && (
           <div className="volume-upsell" onClick={() => handleQuantityChange(100)}>
             <div className="upsell-content">
-              <div className="upsell-icon">💰</div>
+              {/* <div className="upsell-icon">💰</div> */}
               <div className="upsell-text">
                 <div className="upsell-title">Save 20% with bulk ordering</div>
                 <div className="upsell-subtitle">Order 100+ units to unlock volume pricing</div>
@@ -339,7 +339,15 @@ const OrderConfiguration = ({ onOrderChange }) => {
             <div className="shipping-info">
               <div className="shipping-details">
                 <div className="shipping-name">Next-Day Air</div>
-                <div className="shipping-time">1 business day</div>
+                <div className="shipping-time">
+                  {(() => {
+                    const today = new Date();
+                    const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+                    return today > oct10 
+                      ? "1 business day"
+                      : "ships October 10th, delivers next business day";
+                  })()}
+                </div>
               </div>
               <div className="shipping-price">{formatCurrency(shipping.nextDayPrice)}</div>
             </div>
