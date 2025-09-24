@@ -57,7 +57,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
 
       const fallbackShipping = {
         free: qty <= 10,
-        standardPrice: qty > 10 ? 100 : 0,
+        standardPrice: 0,
         nextDayPrice: calculateNextDayPrice(qty)
       };
       setPricing(fallbackPricing);
@@ -113,7 +113,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
 
     const updatedShipping = {
       free: validQuantity <= 10,
-      standardPrice: validQuantity > 10 ? 100 : 0,
+      standardPrice: 0,
       nextDayPrice: calculateNextDayPrice(validQuantity)
     };
     setPricing(updatedPricing);
@@ -319,7 +319,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
                     })()}
                   </div>
                 </div>
-                <div className="shipping-price">{formatCurrency(shipping.standardPrice)}</div>
+                <div className="shipping-price">{shipping.standardPrice === 0 ? 'Free' : formatCurrency(shipping.standardPrice)}</div>
               </div>
             </div>
           )}

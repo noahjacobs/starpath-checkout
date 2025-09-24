@@ -258,7 +258,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                           return 1500 + (additionalTiers * 500);
                         };
                         
-                        const shippingCost = orderData.selectedShipping === 'standard' ? 100 : 
+                        const shippingCost = orderData.selectedShipping === 'standard' ? 0 : 
                                            orderData.selectedShipping === 'nextday' ? calculateNextDayPrice(orderData.quantity) : 0;
                         const subtotalWithShipping = orderData.pricing.totalPrice + shippingCost;
                         return `Complete Purchase · ${formatCurrency(subtotalWithShipping)} + tax`;
