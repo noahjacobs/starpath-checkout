@@ -56,7 +56,7 @@ export default function handler(req, res) {
 
   let shipping = {
     free: qty <= 10,
-    economyPrice: qty > 10 ? 100 : 0,
+    standardPrice: qty > 10 ? 100 : 0,
     nextDayPrice: calculateNextDayPrice(qty)
   };
 

@@ -16,7 +16,7 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
     if (!shipping) return 0;
     switch (selectedShipping) {
       case 'free': return 0;
-      case 'economy': return shipping.economyPrice || 0;
+      case 'standard': return shipping.standardPrice || 0;
       case 'nextday': 
         return shipping.nextDayPrice || 0;
       default: return 0;

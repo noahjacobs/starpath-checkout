@@ -833,6 +833,7 @@ button:disabled {
   padding: 0;
   height: 100%;
   box-shadow: none;
+  appearance: textfield;
   -moz-appearance: textfield;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

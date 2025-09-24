@@ -73,7 +73,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
   const [isLoading, setIsLoading] = useState(false);
   const [orderData, setOrderData] = useState({
     pricing: { quantity: 1, unitPrice: 638, totalPrice: 638, tier: 'standard', discount: 0 },
-    shipping: { free: true, economyPrice: 0, nextDayPrice: 500 },  // No economy for qty 1
+    shipping: { free: true, standardPrice: 0, nextDayPrice: 500 },  // No standard for qty 1
     quantity: 1,
     selectedShipping: 'free'
   });
@@ -258,7 +258,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                           return 1500 + (additionalTiers * 500);
                         };
                         
-                        const shippingCost = orderData.selectedShipping === 'economy' ? 100 : 
+                        const shippingCost = orderData.selectedShipping === 'standard' ? 100 : 
                                            orderData.selectedShipping === 'nextday' ? calculateNextDayPrice(orderData.quantity) : 0;
                         const subtotalWithShipping = orderData.pricing.totalPrice + shippingCost;
                         return `Complete Purchase · ${formatCurrency(subtotalWithShipping)} + tax`;

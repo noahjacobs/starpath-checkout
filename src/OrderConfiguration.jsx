@@ -18,7 +18,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
   
   const [shipping, setShipping] = useState({
     free: true,
-    economyPrice: 0,  // Don't show economy for quantity 1
+    standardPrice: 0,  // Don't show standard for quantity 1
     nextDayPrice: 500
   });
 
@@ -57,7 +57,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
 
       const fallbackShipping = {
         free: qty <= 10,
-        economyPrice: qty > 10 ? 100 : 0,
+        standardPrice: qty > 10 ? 100 : 0,
         nextDayPrice: calculateNextDayPrice(qty)
       };
       setPricing(fallbackPricing);
@@ -113,7 +113,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
 
     const updatedShipping = {
       free: validQuantity <= 10,
-      economyPrice: validQuantity > 10 ? 100 : 0,
+      standardPrice: validQuantity > 10 ? 100 : 0,
       nextDayPrice: calculateNextDayPrice(validQuantity)
     };
     setPricing(updatedPricing);
@@ -124,7 +124,7 @@ const OrderConfiguration = ({ onOrderChange }) => {
     
     // If free shipping was selected but is no longer available (qty > 10)
     if (selectedShipping === 'free' && validQuantity > 10) {
-      newSelectedShipping = 'economy'; // Auto-switch to economy
+      newSelectedShipping = 'standard'; // Auto-switch to standard
       setSelectedShipping(newSelectedShipping);
     }
     // If quantity changes to qualify for free shipping, always select free
@@ -135,14 +135,14 @@ const OrderConfiguration = ({ onOrderChange }) => {
         newSelectedShipping = 'free';
         setSelectedShipping(newSelectedShipping);
         // Reset user selection flag when auto-switching to free
-        if (selectedShipping === 'economy') {
+        if (selectedShipping === 'standard') {
           setUserSelectedShipping(false);
         }
       }
     }
-    // If no shipping was selected and we're in bulk tier, select economy
+    // If no shipping was selected and we're in bulk tier, select standard
     else if (!userSelectedShipping && validQuantity > 10) {
-      newSelectedShipping = 'economy';
+      newSelectedShipping = 'standard';
       setSelectedShipping(newSelectedShipping);
     }
     
@@ -277,14 +277,14 @@ const OrderConfiguration = ({ onOrderChange }) => {
               />
               <div className="shipping-info">
                 <div className="shipping-details">
-                  <div className="shipping-name">Free Shipping</div>
+                  <div className="shipping-name">Standard Shipping</div>
                   <div className="shipping-time">
                     {(() => {
                       const today = new Date();
                       const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
                       return today > oct10 
                         ? "3-5 business days"
-                        : "ships October 10th, delivers October 13-15th";
+                        : "ships October 10th, delivers October 15-17th";
                     })()}
                   </div>
                 </div>
@@ -295,23 +295,31 @@ const OrderConfiguration = ({ onOrderChange }) => {
           
           {quantity > 10 && (
             <div 
-              className={`shipping-card ${selectedShipping === 'economy' ? 'selected' : ''}`}
-              onClick={() => handleShippingChange('economy')}
+              className={`shipping-card ${selectedShipping === 'standard' ? 'selected' : ''}`}
+              onClick={() => handleShippingChange('standard')}
             >
               <input 
                 type="radio" 
                 name="shipping"
-                value="economy" 
-                checked={selectedShipping === 'economy'}
+                value="standard" 
+                checked={selectedShipping === 'standard'}
                 onChange={() => {}} // Controlled by onClick
                 style={{ pointerEvents: 'none' }}
               />
               <div className="shipping-info">
                 <div className="shipping-details">
-                  <div className="shipping-name">Economy Shipping</div>
-                  <div className="shipping-time">5-7 business days</div>
+                  <div className="shipping-name">Standard Shipping</div>
+                  <div className="shipping-time">
+                    {(() => {
+                      const today = new Date();
+                      const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+                      return today > oct10 
+                        ? "5-7 business days"
+                        : "ships October 10th, delivers October 20-22nd";
+                    })()}
+                  </div>
                 </div>
-                <div className="shipping-price">{formatCurrency(shipping.economyPrice)}</div>
+                <div className="shipping-price">{formatCurrency(shipping.standardPrice)}</div>
               </div>
             </div>
           )}
