@@ -768,9 +768,9 @@ button:disabled {
 
 .carousel-thumbnails {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
-  max-width: 320px;
+  max-width: 400px;
   margin: 0 auto;
 }
 
@@ -2177,9 +2177,9 @@ button:disabled {
   }
   
   .carousel-thumbnails {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
-    max-width: 220px;
+    max-width: 280px;
   }
   
   .footer-branding {

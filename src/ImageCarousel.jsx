@@ -20,6 +20,11 @@ const images = [
     id: 4,
     title: 'Technical Specs',
     src: '/images/5.jpeg'
+  },
+  {
+    id: 5,
+    title: 'Additional View',
+    src: '/images/6.jpeg'
   }
 ];
 
