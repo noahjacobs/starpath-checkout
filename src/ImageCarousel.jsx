@@ -7,28 +7,28 @@ const ImageCarousel = () => {
     {
       id: 1,
       title: 'Solar Array View',
-      src: '/images/IMG_1033.jpeg',
+      src: '/images/2.jpeg',
       fallbackGradient: 'linear-gradient(135deg, #1a2980 0%, #26d0ce 100%)',
       icon: '🌟'
     },
     {
       id: 2,
       title: 'Cell Detail',
-      src: '/images/IMG_2849.jpeg',
+      src: '/images/3.jpeg',
       fallbackGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       icon: '🔬'
     },
     {
       id: 3,
       title: 'Mars Installation',
-      src: '/images/IMG_4944.jpeg',
+      src: '/images/4.jpeg',
       fallbackGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
       icon: '🚀'
     },
     {
       id: 4,
       title: 'Technical Specs',
-      src: '/images/IMG_6598.jpeg',
+      src: '/images/5.jpeg',
       fallbackGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
       icon: '⚡'
     }
