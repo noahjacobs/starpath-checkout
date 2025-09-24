@@ -396,14 +396,31 @@ input, select, textarea {
   font-family: inherit;
   outline: none;
   width: 100%;
-  transition: all 0.2s ease;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.15s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 input:focus, select:focus, textarea:focus {
   border: 1px solid var(--accent-blue);
   background-color: var(--bg-quaternary);
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Simplified focus effects on desktop only */
+@media (min-width: 769px) and (hover: hover) {
+  input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Remove expensive focus effects on mobile */
+@media (max-width: 768px) {
+  input, select, textarea {
+    box-shadow: none;
+    transition: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    box-shadow: none;
+  }
 }
 
 input::placeholder, textarea::placeholder {
@@ -436,7 +453,20 @@ h3:first-child, h4:first-child {
 #email.error {
   border: 1px solid var(--accent-red);
   background-color: rgba(255, 69, 58, 0.1);
-  box-shadow: 0 0 0 3px rgba(255, 69, 58, 0.2), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Simplified error effects on desktop only */
+@media (min-width: 769px) and (hover: hover) {
+  #email.error {
+    box-shadow: 0 0 0 2px rgba(255, 69, 58, 0.15);
+  }
+}
+
+/* Remove expensive error effects on mobile */
+@media (max-width: 768px) {
+  #email.error {
+    box-shadow: none;
+  }
 }
 
 #email-errors {
@@ -818,18 +848,136 @@ button:disabled {
   width: 100%;
 }
 
+/* Mobile-specific carousel styles */
+@media (max-width: 768px) {
+  .image-carousel {
+    position: relative;
+  }
+  
+  .carousel-main-image {
+    margin-bottom: 12px;
+  }
+}
+
 .carousel-main-image {
   aspect-ratio: 4/3;
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 8px;
   box-shadow: 0 2px 8px var(--shadow-dark);
+  position: relative;
 }
 
 /* Reduce shadows on mobile for better performance */
 @media (max-width: 768px) {
   .carousel-main-image {
     box-shadow: 0 1px 4px var(--shadow-dark);
+    margin-bottom: 16px;
+  }
+}
+
+/* Mobile arrow navigation */
+@media (max-width: 768px) {
+  .carousel-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    height: 100%;
+  }
+
+  .carousel-arrow {
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-quaternary) 100%);
+    border: 1px solid var(--border-primary);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    user-select: none;
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1;
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .carousel-arrow:active {
+    background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--bg-tertiary) 100%);
+    transform: scale(0.95);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .carousel-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: var(--bg-tertiary);
+  }
+
+  .carousel-arrow:disabled:active {
+    transform: none;
+  }
+
+  .carousel-counter {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 8px 16px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: 0.2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 60px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    white-space: nowrap;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  
+  /* Adjust for smaller screens */
+  @media (max-width: 400px) {
+    .carousel-navigation {
+      padding: 2px 16px;
+    }
+    
+    .carousel-arrow {
+      width: 44px;
+      height: 44px;
+      font-size: 20px;
+    }
+    
+    .carousel-counter {
+      font-size: 13px;
+      padding: 6px 12px;
+      min-width: 50px;
+      height: 28px;
+    }
+  }
+}
+
+/* Hide mobile navigation on desktop */
+@media (min-width: 769px) {
+  .carousel-navigation {
+    display: none;
   }
 }
 
@@ -839,6 +987,13 @@ button:disabled {
   gap: 8px;
   max-width: 400px;
   margin: 0 auto;
+}
+
+/* Hide thumbnails on mobile */
+@media (max-width: 768px) {
+  .carousel-thumbnails {
+    display: none;
+  }
 }
 
 .carousel-thumbnail {
@@ -2173,7 +2328,7 @@ button:disabled {
 }
 
 /* Product Gallery responsive */
-@media only screen and (max-width: 1024px) {
+@media only screen and (max-width: 768px) {
   .product-hero {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -2293,7 +2448,7 @@ button:disabled {
 }
 
 /* Responsive Design */
-@media only screen and (max-width: 1024px) {
+@media only screen and (max-width: 768px) {
   .checkout-content {
     grid-template-columns: 1fr;
     gap: 32px;
