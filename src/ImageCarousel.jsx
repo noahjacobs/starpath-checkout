@@ -67,15 +67,15 @@ const ImageCarousel = () => {
     
     return (
       <div className="carousel-image-container">
-        <img 
-          src={image.src}
-          alt={imageLoaded ? image.title : ""}
-          className={`carousel-image ${imageLoaded ? 'loaded' : 'loading'}`}
-          style={{
-            opacity: imageLoaded ? 1 : 0,
-            pointerEvents: imageLoaded ? 'auto' : 'none'
-          }}
-        />
+        {imageLoaded ? (
+          <img 
+            src={image.src}
+            alt={image.title}
+            className="carousel-image loaded"
+          />
+        ) : (
+          <div className="carousel-image-placeholder"></div>
+        )}
       </div>
     );
   };
