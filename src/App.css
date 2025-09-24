@@ -786,6 +786,9 @@ button:disabled {
   gap: 8px;
   max-width: 400px;
   margin: 0 auto;
+  contain: layout style;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
 }
 
 .carousel-thumbnail {
@@ -794,15 +797,26 @@ button:disabled {
   overflow: hidden;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background: none;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .carousel-thumbnail:hover {
   border-color: var(--accent-blue);
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+}
+
+/* Reduce hover effects on touch devices */
+@media (hover: none) {
+  .carousel-thumbnail:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 .carousel-thumbnail.active {
@@ -2204,6 +2218,8 @@ button:disabled {
     max-width: 280px;
     /* Prevent layout thrashing on mobile */
     contain: layout style;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
   }
   
   .footer-branding {

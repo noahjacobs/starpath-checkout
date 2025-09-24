@@ -31,25 +31,25 @@ const images = [
 const ImageCarousel = () => {
   const [activeImage, setActiveImage] = useState(0);
 
-  // Simple approach: just show images immediately, let browser handle caching
-
-  const generateImage = React.useCallback((image) => {
-    return (
-      <div className="carousel-image-container">
-        <img 
-          src={image.src}
-          alt={image.title}
-          className="carousel-image loaded"
-          loading="lazy"
-        />
-      </div>
-    );
-  }, []);
+  const handleThumbnailClick = React.useCallback((index, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (index !== activeImage) {
+      setActiveImage(index);
+    }
+  }, [activeImage]);
 
   return (
     <div className="image-carousel">
       <div className="carousel-main-image">
-        {generateImage(images[activeImage])}
+        <div className="carousel-image-container">
+          <img 
+            src={images[activeImage].src}
+            alt={images[activeImage].title}
+            className="carousel-image loaded"
+            loading="lazy"
+          />
+        </div>
       </div>
       
       <div className="carousel-thumbnails">
@@ -57,10 +57,20 @@ const ImageCarousel = () => {
           <button
             key={image.id}
             className={`carousel-thumbnail ${index === activeImage ? 'active' : ''}`}
-            onClick={() => setActiveImage(index)}
+            onClick={(e) => handleThumbnailClick(index, e)}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
             aria-label={`View ${image.title}`}
+            type="button"
           >
-            {generateImage(image)}
+            <div className="carousel-image-container">
+              <img 
+                src={image.src}
+                alt={image.title}
+                className="carousel-image loaded"
+                loading="lazy"
+              />
+            </div>
           </button>
         ))}
       </div>
