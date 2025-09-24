@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatCurrency } from './utils/formatting';
 
-const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }) => {
+const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free', selectedProduct = '65W_EM' }) => {
   if (!pricing) {
     return (
       <div className="order-summary">
@@ -11,6 +11,22 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
       </div>
     );
   }
+
+  const getProductInfo = (productType) => {
+    if (productType === '80W_FM') {
+      return {
+        name: 'Starlight 80W FM',
+        subtitle: 'Flight Model'
+      };
+    } else {
+      return {
+        name: 'Starlight 65W EM',
+        subtitle: 'Engineering Model'
+      };
+    }
+  };
+
+  const productInfo = getProductInfo(selectedProduct);
 
   const getShippingCost = () => {
     if (!shipping) return 0;
@@ -70,7 +86,7 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
         </div>
         <div className="product-details-summary">
           <div className="product-name-summary">
-            Starlight 65W EM
+            {productInfo.name}
             {/* {pricing.tier === 'bulk' && (
               <span className="bulk-indicator">Bulk Pricing</span>
             )} */}
@@ -105,24 +121,30 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
             Shipping
             {shippingCost === 0 && (
               <span className="shipping-note">
-                {(() => {
-                  const today = new Date();
-                  const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
-                  return today > oct10 
-                    ? "(3-5 business days)"
-                    : "(ships October 10th, delivers October 13-15th)";
-                })()}
+                {selectedProduct === '80W_FM' 
+                  ? "(Ships Q4 2025)"
+                  : (() => {
+                      const today = new Date();
+                      const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+                      return today > oct10 
+                        ? "(3-5 business days)"
+                        : "(Ships October 10th, delivers October 13-15th)";
+                    })()
+                }
               </span>
             )}
             {selectedShipping === 'nextday' && (
               <span className="shipping-note">
-                {(() => {
-                  const today = new Date();
-                  const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
-                  return today > oct10 
-                    ? "(delivers next business day)"
-                    : "(ships October 10th, delivers next business day)";
-                })()}
+                {selectedProduct === '80W_FM' 
+                  ? "(Ships Q4 2025)"
+                  : (() => {
+                      const today = new Date();
+                      const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+                      return today > oct10 
+                        ? "(delivers next business day)"
+                        : "(Ships October 10th, delivers next business day)";
+                    })()
+                }
               </span>
             )}
           </span>

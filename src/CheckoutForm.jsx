@@ -3,6 +3,7 @@ import {
   PaymentElement,
   useCheckout
 } from '@stripe/react-stripe-js/checkout';
+import { motion, AnimatePresence } from 'framer-motion';
 import OrderSummary from './OrderSummary';
 import OrderConfiguration from './OrderConfiguration';
 import ImageCarousel from './ImageCarousel';
@@ -76,12 +77,13 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
     pricing: { quantity: 1, unitPrice: 638, totalPrice: 638, tier: 'standard', discount: 0 },
     shipping: { free: true, standardPrice: 0, nextDayPrice: 500 },  // No standard for qty 1
     quantity: 1,
-    selectedShipping: 'free'
+    selectedShipping: 'free',
+    selectedProduct: parentOrderData?.product || '65W_EM'
   });
 
   // Move useCallback to the top, before any conditional returns
-  const handleOrderChange = useCallback((pricing, shipping, quantity, selectedShipping) => {
-    const newOrderData = { pricing, shipping, quantity, selectedShipping };
+  const handleOrderChange = useCallback((pricing, shipping, quantity, selectedShipping, selectedProduct) => {
+    const newOrderData = { pricing, shipping, quantity, selectedShipping, selectedProduct };
     setOrderData(newOrderData);
     
     // Update parent order data for Stripe session creation - but only when values actually change
@@ -149,15 +151,94 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
       <div className="checkout-content">
         {/* Left Column: Images + Contact & Payment */}
         <div className="checkout-left-column">
-          {/* Product Images */}
-          <div className="product-images-section">
-            <ImageCarousel />
-          </div>
+          {/* Product Images Container */}
+          <motion.div 
+            className={`product-images-container ${
+              orderData.selectedProduct === '80W_FM' ? 'placeholder-mode' : 'images-mode'
+            }`}
+            layout
+            transition={{ 
+              duration: 0.4, 
+              ease: [0.4, 0, 0.2, 1] 
+            }}
+          >
+            <AnimatePresence>
+              {orderData.selectedProduct !== '80W_FM' && (
+                <motion.div 
+                  className="product-images-section"
+                  key="product-images"
+                  layoutId="main-content"
+                  initial={{ 
+                    opacity: 0, 
+                    y: -20 
+                  }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0 
+                  }}
+                  exit={{ 
+                    opacity: 0, 
+                    y: -30 
+                  }}
+                  transition={{ 
+                    duration: 0.4, 
+                    ease: [0.4, 0, 0.2, 1] 
+                  }}
+                >
+                  <ImageCarousel />
+                </motion.div>
+              )}
+              
+              {orderData.selectedProduct === '80W_FM' && (
+                <motion.div 
+                  className="preorder-placeholder"
+                  key="preorder-placeholder"
+                  layoutId="main-content"
+                  initial={{ 
+                    opacity: 0, 
+                    y: 20 
+                  }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0 
+                  }}
+                  exit={{ 
+                    opacity: 0, 
+                    y: -20 
+                  }}
+                  transition={{ 
+                    duration: 0.4, 
+                    ease: [0.4, 0, 0.2, 1] 
+                  }}
+                >
+                  <div className="preorder-content">
+                    <h3>Starlight 80W FM</h3>
+                    <p>Product images coming soon</p>
+                    <div className="preorder-badge">Pre-Order • Ships Q4 2025</div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
           
           {/* Contact & Payment Form */}
-          <div className="checkout-form-section">
+          <motion.div 
+            className="checkout-form-section"
+            layout
+            transition={{ 
+              duration: 0.4, 
+              ease: [0.4, 0, 0.2, 1] 
+            }}
+          >
             <form id="checkout-form" onSubmit={handleSubmit}>
-              <div className="form-section">
+              <motion.div 
+                className="form-section"
+                layout
+                transition={{ 
+                  duration: 0.4, 
+                  ease: [0.4, 0, 0.2, 1]
+                }}
+              >
                 <h3>Contact information</h3>
                 <EmailInput
                   email={email}
@@ -166,9 +247,16 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                   placeholder="name@example.com"
                   setError={setEmailError}
                 />
-              </div>
+              </motion.div>
 
-              <div className="form-section">
+              <motion.div 
+                className="form-section"
+                layout
+                transition={{ 
+                  duration: 0.4, 
+                  ease: [0.4, 0, 0.2, 1]
+                }}
+              >
                 <h3>Shipping address</h3>
                 <div className="shipping-form">
                   <div className="form-group">
@@ -237,14 +325,32 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="form-section">
+              <motion.div 
+                className="form-section"
+                layout
+                transition={{ 
+                  duration: 0.4, 
+                  ease: [0.4, 0, 0.2, 1]
+                }}
+              >
                 <h3>Payment method</h3>
                 <PaymentElement id="payment-element" />
-              </div>
+              </motion.div>
               
-              <button disabled={isLoading || !orderData.pricing} type="submit" className="form-submit-button">
+              <motion.button 
+                disabled={isLoading || !orderData.pricing} 
+                type="submit" 
+                className="form-submit-button"
+                layout
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ 
+                  duration: 0.4, 
+                  ease: [0.4, 0, 0.2, 1]
+                }}
+              >
                 {isLoading ? (
                   <div className="button-spinner"></div>
                 ) : (
@@ -268,39 +374,79 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                       })()
                     : `Complete Purchase`
                 )}
-              </button>
+              </motion.button>
               
               {message && <div className="payment-message">{message}</div>}
             </form>
-          </div>
+          </motion.div>
         </div>
         
         {/* Right Column: Order Configuration & Summary */}
-        <div className="checkout-right-column">
-          <div className="order-configuration-wrapper">
-            <OrderConfiguration onOrderChange={handleOrderChange} />
+        <motion.div 
+          className="checkout-right-column"
+          layout
+          transition={{ 
+            duration: 0.4, 
+            ease: [0.4, 0, 0.2, 1]
+          }}
+        >
+          <motion.div 
+            className="order-configuration-wrapper"
+            layout
+            transition={{ 
+              duration: 0.4, 
+              ease: [0.4, 0, 0.2, 1]
+            }}
+          >
+            <motion.div
+              layout
+              transition={{ 
+                duration: 0.4, 
+                ease: [0.4, 0, 0.2, 1]
+              }}
+            >
+              <OrderConfiguration 
+                onOrderChange={handleOrderChange} 
+                initialProduct={parentOrderData?.product || '65W_EM'} 
+              />
+            </motion.div>
             
-            <div className="order-summary-wrapper">
+            <motion.div 
+              className="order-summary-wrapper"
+              layout
+              transition={{ 
+                duration: 0.4, 
+                ease: [0.4, 0, 0.2, 1]
+              }}
+            >
               <OrderSummary 
                 pricing={orderData.pricing}
                 shipping={orderData.shipping}
                 quantity={orderData.quantity}
                 selectedShipping={orderData.selectedShipping}
+                selectedProduct={orderData.selectedProduct}
               />
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
       
       {/* Footer Branding */}
-      <div className="checkout-footer">
+      <motion.div 
+        className="checkout-footer"
+        layout
+        transition={{ 
+          duration: 0.4, 
+          ease: [0.4, 0, 0.2, 1]
+        }}
+      >
         <div className="footer-branding">
           <p className="footer-tagline">
             Engineered by Starpath for <span className="mars-text">Mars</span>. Flies Anywhere.
           </p>
           <p className="footer-copyright">@ 2025 Starpath Robotics</p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

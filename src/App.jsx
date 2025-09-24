@@ -7,7 +7,7 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
+  Navigate
 } from "react-router-dom";
 import CheckoutForm from './CheckoutForm';
 
@@ -102,9 +102,25 @@ const Complete = () => {
 };
 
 const App = () => {
-  const [orderData, setOrderData] = useState({
-    quantity: 1,
-    priceId: "price_1SAfGiKXDiHB9vqy69zu2AbV"
+  // Check URL for preorder route or parameter
+  const getInitialProduct = () => {
+    const pathname = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    return (pathname.includes('/preorder') || urlParams.has('preorder')) ? '80W_FM' : '65W_EM';
+  };
+
+  const [orderData, setOrderData] = useState(() => {
+    const initialProduct = getInitialProduct();
+    // Set initial price ID based on product
+    const initialPriceId = initialProduct === '80W_FM' 
+      ? "price_1SAxDBKXDiHB9vqyNg9Bkop5" 
+      : "price_1SAfGiKXDiHB9vqy69zu2AbV";
+    
+    return {
+      quantity: 1,
+      priceId: initialPriceId,
+      product: initialProduct
+    };
   });
 
   // Create a stable function to fetch client secret - use useCallback to prevent infinite re-renders
@@ -153,6 +169,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/checkout" replace />} />
             <Route path="/checkout" element={<CheckoutForm orderData={orderData} setOrderData={setOrderData} />} />
+            <Route path="/checkout/preorder" element={<CheckoutForm orderData={{...orderData, product: '80W_FM'}} setOrderData={setOrderData} />} />
             <Route path="/complete" element={<Complete />} />
           </Routes>
         </CheckoutProvider>
