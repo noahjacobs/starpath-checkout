@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from './utils/formatting';
 
 const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
@@ -272,16 +273,43 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
   return (
     <div className="order-configuration">
       {/* Product Header */}
-      <div className="product-header-compact">
-        <h2>{getProductSpecs(selectedProduct, quantity).name}</h2>
-        <p className="product-subtitle">{getProductSpecs(selectedProduct, quantity).subtitle} • {formatCurrency(pricing.unitPrice)}/unit</p>
-        {pricing.tier === 'bulk' && (
-          <div className="volume-discount-badge">
-            {/* <span className="discount-icon">🎉</span> */}
-            <span>20% Volume Discount</span>
-          </div>
-        )}
-      </div>
+      <motion.div 
+        className="product-header-compact"
+        layout
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        <motion.h2
+          key={`product-name-${selectedProduct}`}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {getProductSpecs(selectedProduct, quantity).name}
+        </motion.h2>
+        <motion.p 
+          className="product-subtitle"
+          key={`product-subtitle-${selectedProduct}-${pricing.unitPrice}`}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          {getProductSpecs(selectedProduct, quantity).subtitle} • {formatCurrency(pricing.unitPrice)}/unit
+        </motion.p>
+        <AnimatePresence>
+          {pricing.tier === 'bulk' && (
+            <motion.div 
+              className="volume-discount-badge"
+              initial={{ opacity: 0, scale: 0.8, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -10 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              {/* <span className="discount-icon">🎉</span> */}
+              <span>20% Volume Discount</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Quantity Section */}
       <div className="quantity-section">
@@ -335,22 +363,37 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
         </div>
 
         {/* Volume Discount Upsell */}
-        {quantity < 100 && (
-          <div className="volume-upsell" onClick={() => handleQuantityChange(100)}>
-            <div className="upsell-content">
-              {/* <div className="upsell-icon">💰</div> */}
-              <div className="upsell-text">
-                <div className="upsell-title">Save 20% with bulk ordering</div>
-                <div className="upsell-subtitle">Order 100+ units to unlock volume pricing</div>
+        <AnimatePresence>
+          {quantity < 100 && (
+            <motion.div 
+              className="volume-upsell" 
+              onClick={() => handleQuantityChange(100)}
+              initial={{ opacity: 0, height: 0, scale: 0.95 }}
+              animate={{ opacity: 1, height: "auto", scale: 1 }}
+              exit={{ opacity: 0, height: 0, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="upsell-content">
+                {/* <div className="upsell-icon">💰</div> */}
+                <div className="upsell-text">
+                  <div className="upsell-title">Save 20% with bulk ordering</div>
+                  <div className="upsell-subtitle">Order 100+ units to unlock volume pricing</div>
+                </div>
+                <motion.div 
+                  className="upsell-arrow"
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16">
+                    <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  </svg>
+                </motion.div>
               </div>
-              <div className="upsell-arrow">
-                <svg width="16" height="16" viewBox="0 0 16 16">
-                  <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Product Selection */}
@@ -360,9 +403,18 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
         </div>
         
         <div className="product-options">
-          <div 
+          <motion.div 
             className={`product-card ${selectedProduct === '65W_EM' ? 'selected' : ''}`}
             onClick={() => handleProductChange('65W_EM')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            animate={{
+              scale: selectedProduct === '65W_EM' ? 1.02 : 1,
+              boxShadow: selectedProduct === '65W_EM' 
+                ? "0 8px 32px rgba(3, 128, 252, 0.2)" 
+                : "0 2px 8px rgba(0, 0, 0, 0.1)"
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <input 
               type="radio" 
@@ -372,17 +424,32 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
               onChange={() => {}} // Controlled by onClick
               style={{ pointerEvents: 'none' }}
             />
-            <div className="product-info">
+            <motion.div 
+              className="product-info"
+              animate={{
+                color: selectedProduct === '65W_EM' ? '#0380fc' : '#333'
+              }}
+              transition={{ duration: 0.2 }}
+            >
               <div className="product-details">
                 <div className="product-name">Starlight 65W EM</div>
                 <div className="product-subtitle">Engineering Model • Available Now</div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           
-          <div 
+          <motion.div 
             className={`product-card ${selectedProduct === '80W_FM' ? 'selected' : ''}`}
             onClick={() => handleProductChange('80W_FM')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            animate={{
+              scale: selectedProduct === '80W_FM' ? 1.02 : 1,
+              boxShadow: selectedProduct === '80W_FM' 
+                ? "0 8px 32px rgba(3, 128, 252, 0.2)" 
+                : "0 2px 8px rgba(0, 0, 0, 0.1)"
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <input 
               type="radio" 
@@ -392,13 +459,19 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
               onChange={() => {}} // Controlled by onClick
               style={{ pointerEvents: 'none' }}
             />
-            <div className="product-info">
+            <motion.div 
+              className="product-info"
+              animate={{
+                color: selectedProduct === '80W_FM' ? '#0380fc' : '#333'
+              }}
+              transition={{ duration: 0.2 }}
+            >
               <div className="product-details">
                 <div className="product-name">Starlight 80W FM</div>
                 <div className="product-subtitle">Flight Model • Pre-Order (Ships Q4 2025)</div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 

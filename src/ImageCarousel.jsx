@@ -53,10 +53,9 @@ const ImageCarousel = () => {
           <img 
             src={images[activeImage].src}
             alt={images[activeImage].title}
-            className="carousel-image loaded"
-            loading="lazy"
-            decoding="async"
-            fetchpriority={activeImage === 0 ? "high" : "low"}
+            className="carousel-image"
+            loading={activeImage === 0 ? "eager" : "lazy"}
+            decoding="sync"
           />
         </div>
       </div>

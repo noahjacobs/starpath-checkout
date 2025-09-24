@@ -887,7 +887,7 @@ button:disabled {
   }
 
   .carousel-arrow {
-    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-quaternary) 100%);
+    background: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
     border-radius: 50%;
     width: 48px;
@@ -902,8 +902,7 @@ button:disabled {
     transition: none;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8px);
+    box-shadow: none;
     user-select: none;
     font-family: system-ui, -apple-system, sans-serif;
     line-height: 1;
@@ -912,9 +911,9 @@ button:disabled {
   }
 
   .carousel-arrow:active {
-    background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--bg-tertiary) 100%);
-    transform: scale(0.95);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    background: var(--bg-quaternary);
+    transform: none;
+    box-shadow: none;
   }
 
   .carousel-arrow:disabled {
@@ -928,19 +927,18 @@ button:disabled {
   }
 
   .carousel-counter {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 16px;
+    padding: 6px 12px;
     color: white;
     font-size: 14px;
     font-weight: 500;
     text-align: center;
-    letter-spacing: 0.2px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    min-width: 60px;
-    height: 32px;
+    letter-spacing: 0.1px;
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 50px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -956,20 +954,20 @@ button:disabled {
   /* Adjust for smaller screens */
   @media (max-width: 400px) {
     .carousel-navigation {
-      padding: 2px 16px;
+      padding: 2px 12px;
     }
     
     .carousel-arrow {
-      width: 44px;
-      height: 44px;
-      font-size: 20px;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
     }
     
     .carousel-counter {
-      font-size: 13px;
-      padding: 6px 12px;
-      min-width: 50px;
-      height: 28px;
+      font-size: 12px;
+      padding: 4px 8px;
+      min-width: 40px;
+      height: 24px;
     }
   }
 }
