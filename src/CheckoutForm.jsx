@@ -162,6 +162,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                   email={email}
                   setEmail={setEmail}
                   error={emailError}
+                  placeholder="name@example.com"
                   setError={setEmailError}
                 />
               </div>
