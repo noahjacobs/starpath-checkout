@@ -3,7 +3,6 @@ import {
   PaymentElement,
   useCheckout
 } from '@stripe/react-stripe-js/checkout';
-import { motion, AnimatePresence } from 'framer-motion';
 import OrderSummary from './OrderSummary';
 import OrderConfiguration from './OrderConfiguration';
 import ImageCarousel from './ImageCarousel';
@@ -155,131 +154,48 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
           orderData.selectedProduct === '80W_FM' ? 'placeholder-mode' : 'images-mode'
         }`}
       >
-        <AnimatePresence>
-          {orderData.selectedProduct !== '80W_FM' && (
-            <motion.div 
-              className="product-images-section"
-              key="mobile-product-images"
-              layoutId="mobile-main-content"
-              initial={{ 
-                opacity: 0, 
-                y: -20 
-              }}
-              animate={{ 
-                opacity: 1, 
-                y: 0 
-              }}
-              exit={{ 
-                opacity: 0, 
-                y: -30 
-              }}
-              transition={{ 
-                duration: 0.4, 
-                ease: [0.4, 0, 0.2, 1] 
-              }}
-            >
-              <ImageCarousel />
-            </motion.div>
-          )}
-          
-          {orderData.selectedProduct === '80W_FM' && (
-            <motion.div 
-              className="preorder-placeholder"
-              key="mobile-preorder-placeholder"
-              layoutId="mobile-main-content"
-              initial={{ 
-                opacity: 0, 
-                y: 20 
-              }}
-              animate={{ 
-                opacity: 1, 
-                y: 0 
-              }}
-              exit={{ 
-                opacity: 0, 
-                y: -20 
-              }}
-              transition={{ 
-                duration: 0.4, 
-                ease: [0.4, 0, 0.2, 1] 
-              }}
-            >
-              <div className="preorder-content">
-                <h3>Starlight 80W FM</h3>
-                <p>Product images coming soon</p>
-                <div className="preorder-badge">Pre-Order • Ships Q4 2025</div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* MOBILE SECTION - SHOW ACTUAL CAROUSEL */}
+        {orderData.selectedProduct !== '80W_FM' && (
+          <div className="product-images-section mobile-only">
+            <ImageCarousel />
+          </div>
+        )}
+        
+        {orderData.selectedProduct === '80W_FM' && (
+          <div className="preorder-placeholder mobile-preorder">
+            <div className="preorder-content">
+              <h3>Starlight 80W FM</h3>
+              <p>Product images coming soon</p>
+              <div className="preorder-badge">Pre-Order • Ships Q4 2025</div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="checkout-content">
         {/* Left Column: Images + Contact & Payment */}
         <div className="checkout-left-column">
-          {/* Product Images Container */}
           <div 
             className={`product-images-container desktop-images ${
               orderData.selectedProduct === '80W_FM' ? 'placeholder-mode' : 'images-mode'
             }`}
           >
-            <AnimatePresence>
-              {orderData.selectedProduct !== '80W_FM' && (
-                <motion.div 
-                  className="product-images-section"
-                  key="product-images"
-                  layoutId="main-content"
-                  initial={{ 
-                    opacity: 0, 
-                    y: -20 
-                  }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0 
-                  }}
-                  exit={{ 
-                    opacity: 0, 
-                    y: -30 
-                  }}
-                  transition={{ 
-                    duration: 0.4, 
-                    ease: [0.4, 0, 0.2, 1] 
-                  }}
-                >
-                  <ImageCarousel />
-                </motion.div>
-              )}
-              
-              {orderData.selectedProduct === '80W_FM' && (
-                <motion.div 
-                  className="preorder-placeholder"
-                  key="preorder-placeholder"
-                  layoutId="main-content"
-                  initial={{ 
-                    opacity: 0, 
-                    y: 20 
-                  }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0 
-                  }}
-                  exit={{ 
-                    opacity: 0, 
-                    y: -20 
-                  }}
-                  transition={{ 
-                    duration: 0.4, 
-                    ease: [0.4, 0, 0.2, 1] 
-                  }}
-                >
-                  <div className="preorder-content">
-                    <h3>Starlight 80W FM</h3>
-                    <p>Product images coming soon</p>
-                    <div className="preorder-badge">Pre-Order • Ships Q4 2025</div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+             {/* DESKTOP CAROUSEL SECTION */}
+             {orderData.selectedProduct !== '80W_FM' && (
+               <div className="product-images-section shared-carousel">
+                 <ImageCarousel />
+               </div>
+             )}
+               
+             {orderData.selectedProduct === '80W_FM' && (
+               <div className="preorder-placeholder">
+                 <div className="preorder-content">
+                   <h3>Starlight 80W FM</h3>
+                   <p>Product images coming soon</p>
+                   <div className="preorder-badge">Pre-Order • Ships Q4 2025</div>
+                 </div>
+               </div>
+             )}
           </div>
           
           {/* Contact & Payment Form */}

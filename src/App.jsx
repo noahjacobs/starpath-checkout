@@ -10,7 +10,6 @@ import {
   Navigate
 } from "react-router-dom";
 import CheckoutForm from './CheckoutForm';
-
 import "./App.css";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
@@ -45,7 +44,12 @@ const Complete = () => {
     const sessionId = urlParams.get('session_id');
 
     fetch(`/api/session-status?session_id=${sessionId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         setStatus(data.status);
         setPaymentIntentId(data.payment_intent_id);
@@ -61,6 +65,12 @@ const Complete = () => {
           setIcon(ErrorIcon);
           setText('Something went wrong, please try again.');
         }
+      })
+      .catch((error) => {
+        console.error('Error fetching session status:', error);
+        setIconColor('#DF1B41');
+        setIcon(ErrorIcon);
+        setText('Failed to load payment status. Please try again.');
       });
   }, []);
 
@@ -148,10 +158,6 @@ const App = () => {
       const data = await response.json();
       return data.clientSecret;
     } catch (error) {
-      // Remove expensive console.error to prevent mobile performance issues
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error creating checkout session:', error);
-      }
       throw error;
     }
   }, [quantity, priceId]); // Use extracted primitive values instead of object properties
