@@ -2152,6 +2152,9 @@ button:disabled {
     position: static;
     margin-bottom: 20px;
     min-height: auto !important;
+    /* Prevent layout shift during image loading */
+    contain: layout style paint;
+    will-change: transform;
   }
   
   
@@ -2180,6 +2183,8 @@ button:disabled {
     grid-template-columns: repeat(5, 1fr);
     gap: 6px;
     max-width: 280px;
+    /* Prevent layout thrashing on mobile */
+    contain: layout style;
   }
   
   .footer-branding {

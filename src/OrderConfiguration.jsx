@@ -96,18 +96,34 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
     }
   };
 
-  // Initialize component ONCE when pricing and shipping are ready
+  // Initialize component ONCE when pricing and shipping are ready - but protect against multiple calls
   const isInitialized = React.useRef(false);
+  const initializationTimer = React.useRef(null);
   
   useEffect(() => {
-    // Only call onOrderChange once during initialization
+    // Only call onOrderChange once during initialization with debouncing
     if (!isInitialized.current && pricing && shipping && onOrderChange) {
-      console.log('OrderConfiguration: Initializing with:', { pricing, shipping, quantity, selectedShipping });
-      onOrderChange(pricing, shipping, quantity, selectedShipping, selectedProduct);
-      isInitialized.current = true;
+      // Clear any previous timer
+      if (initializationTimer.current) {
+        clearTimeout(initializationTimer.current);
+      }
+      
+      // Debounce the initialization call to prevent rapid-fire calls
+      initializationTimer.current = setTimeout(() => {
+        if (!isInitialized.current) {
+          console.log('OrderConfiguration: Initializing with:', { pricing, shipping, quantity, selectedShipping, selectedProduct });
+          onOrderChange(pricing, shipping, quantity, selectedShipping, selectedProduct);
+          isInitialized.current = true;
+        }
+      }, 50); // 50ms debounce
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  // ^ Empty dependency array intentional - initialization should only happen once
+    
+    return () => {
+      if (initializationTimer.current) {
+        clearTimeout(initializationTimer.current);
+      }
+    };
+  }, [pricing, shipping, onOrderChange, quantity, selectedShipping, selectedProduct]);
 
   const handleQuantityChange = (newQuantity) => {
     const validQuantity = Math.max(1, Math.min(1000, newQuantity));

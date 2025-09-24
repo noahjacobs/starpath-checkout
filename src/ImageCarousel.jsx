@@ -35,22 +35,18 @@ const ImageCarousel = () => {
   // Preload all images
   useEffect(() => {
     const preloadImages = async () => {
+      const newLoadedImages = {};
+      
       const imagePromises = images.map((image) => {
         return new Promise((resolve, reject) => {
           const img = new Image();
           img.onload = () => {
-            setLoadedImages(prev => ({
-              ...prev,
-              [image.id]: true
-            }));
+            newLoadedImages[image.id] = true;
             resolve(image.id);
           };
           img.onerror = () => {
             // Still resolve even on error to prevent blocking
-            setLoadedImages(prev => ({
-              ...prev,
-              [image.id]: false
-            }));
+            newLoadedImages[image.id] = false;
             resolve(image.id);
           };
           img.src = image.src;
@@ -59,15 +55,21 @@ const ImageCarousel = () => {
 
       try {
         await Promise.all(imagePromises);
+        // Single state update instead of multiple updates
+        setLoadedImages(newLoadedImages);
       } catch (error) {
         console.error('Error preloading images:', error);
+        // Set all as failed in a single update
+        const failedImages = {};
+        images.forEach(img => failedImages[img.id] = false);
+        setLoadedImages(failedImages);
       }
     };
 
     preloadImages();
   }, []);
 
-  const generateImage = (image) => {
+  const generateImage = React.useCallback((image) => {
     const imageLoaded = loadedImages[image.id];
     
     return (
@@ -83,7 +85,7 @@ const ImageCarousel = () => {
         )}
       </div>
     );
-  };
+  }, [loadedImages]);
 
   return (
     <div className="image-carousel">
