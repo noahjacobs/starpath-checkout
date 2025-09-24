@@ -83,7 +83,10 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       // Don't update shipping to preserve our correct frontend calculations
       
     } catch (error) {
-      console.error('Error fetching pricing:', error);
+      // Remove expensive console.error to prevent mobile performance issues
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching pricing:', error);
+      }
       // Fallback pricing using product specs
       const specs = getProductSpecs(selectedProduct, qty);
       const fallbackPricing = {
@@ -130,7 +133,10 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       // Debounce the initialization call to prevent rapid-fire calls
       initializationTimer.current = setTimeout(() => {
         if (!isInitialized.current) {
-          console.log('OrderConfiguration: Initializing with:', { pricing, shipping, quantity, selectedShipping, selectedProduct });
+          // Remove heavy console.log to prevent mobile performance issues
+          if (process.env.NODE_ENV === 'development') {
+            console.log('OrderConfiguration: Initializing');
+          }
           onOrderChange(pricing, shipping, quantity, selectedShipping, selectedProduct);
           isInitialized.current = true;
         }
@@ -215,8 +221,10 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
     // Immediately notify parent
     onOrderChange(updatedPricing, updatedShipping, validQuantity, newSelectedShipping, selectedProduct);
     
-    // Fetch real data in background (don't override our calculations)
-    fetchPricingInfo(validQuantity);
+    // Defer API call to prevent blocking main thread on mobile
+    setTimeout(() => {
+      fetchPricingInfo(validQuantity);
+    }, 1000); // 1 second delay to let UI render first
   };
 
   const handleShippingChange = (shippingType) => {

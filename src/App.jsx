@@ -144,7 +144,10 @@ const App = () => {
       const data = await response.json();
       return data.clientSecret;
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      // Remove expensive console.error to prevent mobile performance issues
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error creating checkout session:', error);
+      }
       throw error;
     }
   }, [orderData.quantity, orderData.priceId]); // Only recreate when these specific values change
