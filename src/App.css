@@ -30,6 +30,10 @@ html, body {
   /* Enable smooth scrolling on mobile */
   touch-action: manipulation;
   -webkit-overflow-scrolling: touch;
+  /* Additional mobile scroll optimizations */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -156,6 +160,13 @@ body {
 .checkout-right-column {
   position: sticky;
   top: 20px;
+}
+
+/* Disable sticky on mobile to prevent scroll performance issues */
+@media only screen and (max-width: 1024px) {
+  .checkout-right-column {
+    position: static !important;
+  }
 }
 
 .order-configuration-wrapper {
@@ -2157,7 +2168,12 @@ button:disabled {
     min-height: auto !important;
     /* Prevent layout shift during image loading */
     contain: layout style paint;
-    will-change: transform;
+    /* Optimize for mobile scrolling */
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    /* Enable smooth touch interactions */
+    touch-action: manipulation;
   }
   
   
@@ -2205,6 +2221,11 @@ button:disabled {
 @media only screen and (max-width: 600px) {
   .App {
     padding: 10px;
+    /* Improve mobile scroll performance */
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
   
   .checkout-layout {

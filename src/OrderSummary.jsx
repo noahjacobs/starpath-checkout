@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { formatCurrency } from './utils/formatting';
 
 const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free', selectedProduct = '65W_EM' }) => {
+  // Memoize expensive date calculations to prevent re-computation on every render
+  const shippingMessages = useMemo(() => {
+    const today = new Date();
+    const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+    const isAfterOct10 = today > oct10;
+    
+    return {
+      standard: isAfterOct10 
+        ? "(3-5 business days)"
+        : "(Ships October 10th, delivers October 13-15th)",
+      nextday: isAfterOct10 
+        ? "(delivers next business day)"
+        : "(Ships October 10th, delivers next business day)"
+    };
+  }, []); // Empty dependency array - only calculate once per component mount
+
   if (!pricing) {
     return (
       <div className="order-summary">
@@ -123,13 +139,7 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free', 
               <span className="shipping-note">
                 {selectedProduct === '80W_FM' 
                   ? "(Ships Q4 2025)"
-                  : (() => {
-                      const today = new Date();
-                      const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
-                      return today > oct10 
-                        ? "(3-5 business days)"
-                        : "(Ships October 10th, delivers October 13-15th)";
-                    })()
+                  : shippingMessages.standard
                 }
               </span>
             )}
@@ -137,13 +147,7 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free', 
               <span className="shipping-note">
                 {selectedProduct === '80W_FM' 
                   ? "(Ships Q4 2025)"
-                  : (() => {
-                      const today = new Date();
-                      const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
-                      return today > oct10 
-                        ? "(delivers next business day)"
-                        : "(Ships October 10th, delivers next business day)";
-                    })()
+                  : shippingMessages.nextday
                 }
               </span>
             )}

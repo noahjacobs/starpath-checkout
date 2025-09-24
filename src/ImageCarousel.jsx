@@ -99,6 +99,20 @@ const ImageCarousel = () => {
             key={image.id}
             className={`carousel-thumbnail ${index === activeImage ? 'active' : ''}`}
             onClick={() => setActiveImage(index)}
+            onTouchStart={(e) => {
+              // Prevent touch from interfering with scroll
+              e.stopPropagation();
+            }}
+            onTouchEnd={(e) => {
+              // Ensure touch selection works on mobile
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveImage(index);
+            }}
+            style={{ 
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
             aria-label={`View ${image.title}`}
           >
             {generateImage(image)}

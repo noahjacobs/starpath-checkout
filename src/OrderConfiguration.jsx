@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { formatCurrency } from './utils/formatting';
 
 const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
@@ -6,6 +6,25 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
   const [selectedShipping, setSelectedShipping] = useState('free');
   const [userSelectedShipping, setUserSelectedShipping] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(initialProduct);
+  
+  // Memoize expensive date calculations to prevent re-computation on every render
+  const shippingMessages = useMemo(() => {
+    const today = new Date();
+    const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
+    const isAfterOct10 = today > oct10;
+    
+    return {
+      standard: isAfterOct10 
+        ? "3-5 business days"
+        : "Ships October 10th, delivers October 15-17th",
+      standardBulk: isAfterOct10 
+        ? "5-7 business days"
+        : "Ships October 10th, delivers October 20-22nd",
+      nextday: isAfterOct10 
+        ? "1 business day"
+        : "Ships October 10th, delivers next business day"
+    };
+  }, []); // Empty dependency array - only calculate once per component mount
   
   // Get product specifications
   const getProductSpecs = (productType, qty = 1) => {
@@ -397,13 +416,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
                   <div className="shipping-time">
                     {selectedProduct === '80W_FM' 
                       ? "Ships Q4 2025"
-                      : (() => {
-                          const today = new Date();
-                          const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
-                          return today > oct10 
-                            ? "3-5 business days"
-                            : "Ships October 10th, delivers October 15-17th";
-                        })()
+                      : shippingMessages.standard
                     }
                   </div>
                 </div>
@@ -431,13 +444,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
                   <div className="shipping-time">
                     {selectedProduct === '80W_FM' 
                       ? "Ships Q4 2025"
-                      : (() => {
-                          const today = new Date();
-                          const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
-                          return today > oct10 
-                            ? "5-7 business days"
-                            : "Ships October 10th, delivers October 20-22nd";
-                        })()
+                      : shippingMessages.standardBulk
                     }
                   </div>
                 </div>
@@ -464,13 +471,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
                 <div className="shipping-time">
                   {selectedProduct === '80W_FM' 
                     ? "Ships Q4 2025"
-                    : (() => {
-                        const today = new Date();
-                        const oct10 = new Date(today.getFullYear(), 9, 10); // October is month 9 (0-based)
-                        return today > oct10 
-                          ? "1 business day"
-                          : "Ships October 10th, delivers next business day";
-                      })()
+                    : shippingMessages.nextday
                   }
                 </div>
               </div>
