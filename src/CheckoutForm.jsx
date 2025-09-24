@@ -195,7 +195,8 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                     <div className="select-wrapper">
                       <select id="country" defaultValue="US" required>
                         {/* <option value="">Select a country</option> */}
-                        <option value="US">🇺🇸 United States</option>
+                        {/* <option value="US">🇺🇸 United States</option> */}
+                        <option value="US">United States</option>
                         {/* <option value="CA">🇨🇦 Canada</option>
                         <option value="GB">🇬🇧 United Kingdom</option>
                         <option value="AU">🇦🇺 Australia</option>

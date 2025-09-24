@@ -75,9 +75,9 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
               <span className="bulk-indicator">Bulk Pricing</span>
             )} */}
           </div>
-          <div className="product-meta hidden sm:block">
+          {/* <div className="product-meta hidden sm:block">
             16% efficient, LEO-tough solar modules. {formatCurrency(pricing.unitPrice)}/W and below.
-          </div>
+          </div> */}
           <div className="quantity-display">
             Qty {quantity} × {formatCurrency(pricing.unitPrice)}
             {/* {pricing.discount > 0 && (
