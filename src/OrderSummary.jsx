@@ -71,18 +71,18 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free' }
         <div className="product-details-summary">
           <div className="product-name-summary">
             Starlight 65W EM
-            {pricing.tier === 'bulk' && (
+            {/* {pricing.tier === 'bulk' && (
               <span className="bulk-indicator">Bulk Pricing</span>
-            )}
+            )} */}
           </div>
           <div className="product-meta hidden sm:block">
             16% efficient, LEO-tough solar modules. {formatCurrency(pricing.unitPrice)}/W and below.
           </div>
           <div className="quantity-display">
             Qty {quantity} × {formatCurrency(pricing.unitPrice)}
-            {pricing.discount > 0 && (
+            {/* {pricing.discount > 0 && (
               <span className="discount-applied">({pricing.discount}% off)</span>
-            )}
+            )} */}
           </div>
         </div>
         <div className="item-total">

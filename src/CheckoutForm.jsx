@@ -15,7 +15,7 @@ const validateEmail = async (email, checkout) => {
   return { isValid, message: !isValid ? updateResult.error.message : null };
 }
 
-const EmailInput = ({ email, setEmail, error, setError }) => {
+const EmailInput = ({ email, setEmail, error, setError, placeholder }) => {
   const checkoutState = useCheckout();
   if (checkoutState.type === 'loading') {
     return (
@@ -59,6 +59,7 @@ const EmailInput = ({ email, setEmail, error, setError }) => {
           onChange={handleChange}
           onBlur={handleBlur}
           className={error ? "error" : ""}
+          placeholder={placeholder}
         />
       </label>
       {error && <div id="email-errors">{error}</div>}
