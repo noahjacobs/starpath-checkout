@@ -22,10 +22,10 @@ const publishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = loadStripe(publishableKey);
 
 const Complete = () => {
-  const [status, setStatus] = useState(null);
-  const [paymentIntentId, setPaymentIntentId] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('');
-  const [paymentIntentStatus, setPaymentIntentStatus] = useState('');
+  // const [status, setStatus] = useState(null);
+  // const [paymentIntentId, setPaymentIntentId] = useState('');
+  // const [paymentStatus, setPaymentStatus] = useState('');
+  // const [paymentIntentStatus, setPaymentIntentStatus] = useState('');
   const [iconColor, setIconColor] = useState('');
   const [icon, setIcon] = useState('');
   const [text, setText] = useState('');
@@ -52,10 +52,10 @@ const Complete = () => {
         return res.json();
       })
       .then((data) => {
-        setStatus(data.status);
-        setPaymentIntentId(data.payment_intent_id);
-        setPaymentStatus(data.payment_status);
-        setPaymentIntentStatus(data.payment_intent_status);
+        // setStatus(data.status);
+        // setPaymentIntentId(data.payment_intent_id);
+        // setPaymentStatus(data.payment_status);
+        // setPaymentIntentStatus(data.payment_intent_status);
 
         if (data.status === 'complete') {
           setIconColor('#30B130');
