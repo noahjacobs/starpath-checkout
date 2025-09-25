@@ -4,29 +4,24 @@ import React, { useState } from 'react';
 const images = [
   {
     id: 1,
-    title: 'Solar Array View',
+    title: 'Image 1',
     src: '/images/2.jpeg'
   },
   {
     id: 2,
-    title: 'Cell Detail',
-    src: '/images/3.jpeg'
+    title: 'Image 2',
+    src: '/images/6.jpeg'
   },
   {
     id: 3,
-    title: 'Mars Installation',
+    title: 'Image 3',
     src: '/images/4.jpeg'
   },
   {
     id: 4,
-    title: 'Technical Specs',
+    title: 'Image 4',
     src: '/images/5.jpeg'
   },
-  {
-    id: 5,
-    title: 'Additional View',
-    src: '/images/6.jpeg'
-  }
 ];
 
 const ImageCarousel = () => {  

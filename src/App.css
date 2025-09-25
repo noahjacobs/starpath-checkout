@@ -863,7 +863,7 @@ button:disabled {
   aspect-ratio: 4/3;
   border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
   box-shadow: 0 2px 8px var(--shadow-dark);
   position: relative;
 }
@@ -981,7 +981,7 @@ button:disabled {
 
 .carousel-thumbnails {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   max-width: 400px;
   margin: 0 auto;
@@ -1041,6 +1041,7 @@ button:disabled {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
   border-radius: inherit;
   /* Disable animation on mobile for performance */
 }
@@ -2487,7 +2488,7 @@ button:disabled {
   }
   
   .carousel-thumbnails {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
     max-width: 280px;
   }
