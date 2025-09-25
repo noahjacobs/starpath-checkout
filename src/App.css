@@ -1046,6 +1046,16 @@ button:disabled {
   /* Disable animation on mobile for performance */
 }
 
+/* Image ID 3 (4.jpeg) - focus on bottom half */
+.carousel-image.image-3 {
+  object-position: center bottom;
+}
+
+/* Image ID 4 (5.jpeg) - crop right 10% by shifting left */
+.carousel-image.image-4 {
+  object-position: 25% center;
+}
+
 .carousel-image-placeholder {
   width: 100%;
   height: 100%;

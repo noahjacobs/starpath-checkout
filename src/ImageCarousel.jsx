@@ -48,7 +48,7 @@ const ImageCarousel = () => {
           <img 
             src={images[activeImage].src}
             alt={images[activeImage].title}
-            className="carousel-image"
+            className={`carousel-image image-${images[activeImage].id}`}
             loading={activeImage === 0 ? "eager" : "lazy"}
             decoding="sync"
           />
@@ -68,7 +68,7 @@ const ImageCarousel = () => {
               <img 
                 src={image.src}
                 alt={image.title}
-                className="carousel-image loaded"
+                className={`carousel-image image-${image.id} loaded`}
                 loading="lazy"
                 decoding="async"
                 fetchpriority="low"
