@@ -72,6 +72,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
   const [emailError, setEmailError] = useState(null);
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [orderData, setOrderData] = useState({
     pricing: { quantity: 1, unitPrice: 638, totalPrice: 638, tier: 'standard', discount: 0 },
     shipping: { free: true, standardPrice: 0, nextDayPrice: 500 },  // No standard for qty 1
@@ -123,6 +124,13 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
     e.preventDefault();
 
     setIsLoading(true);
+
+    // Validate terms and conditions first
+    if (!acceptedTerms) {
+      setMessage('Please accept the terms and conditions to continue.');
+      setIsLoading(false);
+      return;
+    }
 
     const { isValid, message } = await validateEmail(email, checkout);
     if (!isValid) {
@@ -295,9 +303,36 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                 <h3>Payment method</h3>
                 <PaymentElement id="payment-element" />
               </div>
+
+              <div 
+                className="form-section"
+              >
+                <div className="terms-and-conditions">
+                  <label className="terms-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={acceptedTerms}
+                      onChange={(e) => setAcceptedTerms(e.target.checked)}
+                      className="checkbox-input"
+                    />
+                    <div className="checkbox-custom"></div>
+                    <span className="terms-text">
+                      I agree to the{' '}
+                      <a 
+                        href="/Starlight-tc.pdf" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="terms-link"
+                      >
+                        Terms and Conditions
+                      </a>
+                    </span>
+                  </label>
+                </div>
+              </div>
               
               <button 
-                disabled={isLoading || !orderData.pricing} 
+                disabled={isLoading || !orderData.pricing || !acceptedTerms} 
                 type="submit" 
                 className="form-submit-button"
               >

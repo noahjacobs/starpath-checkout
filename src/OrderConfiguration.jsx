@@ -38,7 +38,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
         subtitle: 'Flight Model',
         unitPrice: unitPrice,
         bulkDiscount: qty >= 100 ? 20 : 0,
-        priceId: qty >= 100 ? "price_1SAfG80WFMBulk" : "price_1SAfG80WFMStandard"
+        priceId: qty >= 100 ? "price_1SAxDaKXDiHB9vqyDjybl3fP" : "price_1SAxDBKXDiHB9vqyNg9Bkop5"
       };
     } else {
       // 65W EM (existing)

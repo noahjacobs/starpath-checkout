@@ -29,10 +29,14 @@ export default async function handler(req, res) {
     let selectedPriceId;
     if (priceId) {
       selectedPriceId = priceId;
-    } else if (quantity >= 100) {
-      selectedPriceId = "price_1SAfGwKXDiHB9vqyZK6u2ro5"; // Bulk pricing (20% discount)
     } else {
-      selectedPriceId = "price_1SAfGiKXDiHB9vqy69zu2AbV"; // Standard pricing
+      // Fallback logic - should not be used since frontend always provides priceId
+      // but kept for backwards compatibility
+      if (quantity >= 100) {
+        selectedPriceId = "price_1SAfGwKXDiHB9vqyZK6u2ro5"; // 65W EM Bulk pricing (20% discount)
+      } else {
+        selectedPriceId = "price_1SAfGiKXDiHB9vqy69zu2AbV"; // 65W EM Standard pricing
+      }
     }
 
     const session = await stripe.checkout.sessions.create({
