@@ -188,7 +188,7 @@ const App = () => {
           </Routes>
         </CheckoutProvider>
       </Router>
-      <Analytics />
+      {process.env.NODE_ENV === 'production' && <Analytics />}
     </div>
   )
 }

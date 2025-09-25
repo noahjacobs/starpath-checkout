@@ -3,9 +3,9 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
 });
 
 // Get the domain from environment variables or default to production URL
-const YOUR_DOMAIN = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : process.env.DOMAIN || "https://starpath-checkout.vercel.app";
+const YOUR_DOMAIN = process.env.NODE_ENV === 'development'
+  ? "http://localhost:3000"
+  : process.env.DOMAIN || "https://starlight.starpath.space";
 
 export default async function handler(req, res) {
   // Set CORS headers
