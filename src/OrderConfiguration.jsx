@@ -312,7 +312,11 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       </motion.div>
 
       {/* Quantity Section */}
-      <div className="quantity-section">
+      <motion.div 
+        className="quantity-section"
+        layout
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
         <div className="section-header">
           <h3>Quantity</h3>
         </div>
@@ -368,12 +372,13 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
             <motion.div 
               className="volume-upsell" 
               onClick={() => handleQuantityChange(100)}
-              initial={{ opacity: 0, height: 0, scale: 0.95 }}
-              animate={{ opacity: 1, height: "auto", scale: 1 }}
-              exit={{ opacity: 0, height: 0, scale: 0.95 }}
+              initial={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
+              animate={{ opacity: 1, maxHeight: 200, scale: 1 }}
+              exit={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              style={{ overflow: 'hidden' }}
             >
               <div className="upsell-content">
                 {/* <div className="upsell-icon">💰</div> */}
@@ -394,10 +399,14 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {/* Product Selection */}
-      <div className="product-selection-section">
+      <motion.div 
+        className="product-selection-section"
+        layout
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
         <div className="section-header">
           <h3>Product</h3>
         </div>
@@ -473,10 +482,14 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
             </motion.div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Shipping Section */}
-      <div className="shipping-section">
+      <motion.div 
+        className="shipping-section"
+        layout
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
         <div className="section-header">
           <h3>Shipping</h3>
         </div>
@@ -564,7 +577,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
