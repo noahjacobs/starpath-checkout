@@ -9,6 +9,7 @@ import {
   Routes,
   Navigate
 } from "react-router-dom";
+import { Analytics } from '@vercel/analytics/react';
 import CheckoutForm from './CheckoutForm';
 import "./App.css";
 
@@ -187,6 +188,7 @@ const App = () => {
           </Routes>
         </CheckoutProvider>
       </Router>
+      <Analytics />
     </div>
   )
 }
