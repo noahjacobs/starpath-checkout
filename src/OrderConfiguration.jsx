@@ -30,25 +30,58 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
   // Get product specifications
   const getProductSpecs = (productType, qty = 1) => {
     if (productType === '80W_FM') {
-      // 80W FM: $11.20/W = $896 per unit
-      // For bulk (100+), assume 20% discount like 65W EM = $716.80 per unit
-      const unitPrice = qty >= 100 ? 716.80 : 896.00;
+      // 80W FM: $11.20/W = $896 per unit standard
+      // 10% discount (qty 10-99): $806.40 per unit  
+      // 20% discount (qty 100+): $716.80 per unit
+      let unitPrice, bulkDiscount, priceId;
+      
+      if (qty >= 100) {
+        unitPrice = 716.80;
+        bulkDiscount = 20;
+        priceId = "price_1SAxDaKXDiHB9vqyDjybl3fP";
+      } else if (qty >= 10) {
+        unitPrice = 806.40;
+        bulkDiscount = 10;
+        priceId = "price_1SBh5zKXDiHB9vqyJAyKXGa0";
+      } else {
+        unitPrice = 896.00;
+        bulkDiscount = 0;
+        priceId = "price_1SAxDBKXDiHB9vqyNg9Bkop5";
+      }
+      
       return {
         name: 'Starlight 80W FM',
         subtitle: 'Flight Model',
         unitPrice: unitPrice,
-        bulkDiscount: qty >= 100 ? 20 : 0,
-        priceId: qty >= 100 ? "price_1SAxDaKXDiHB9vqyDjybl3fP" : "price_1SAxDBKXDiHB9vqyNg9Bkop5"
+        bulkDiscount: bulkDiscount,
+        priceId: priceId
       };
     } else {
-      // 65W EM (existing)
-      const unitPrice = qty >= 100 ? 510.40 : 638.00;
+      // 65W EM: $638 per unit standard
+      // 10% discount (qty 10-99): $574.20 per unit
+      // 20% discount (qty 100+): $510.40 per unit  
+      let unitPrice, bulkDiscount, priceId;
+      
+      if (qty >= 100) {
+        unitPrice = 510.40;
+        bulkDiscount = 20;
+        priceId = "price_1SAfGwKXDiHB9vqyZK6u2ro5";
+      } else if (qty >= 10) {
+        unitPrice = 574.20;
+        bulkDiscount = 10;
+        priceId = "price_1SBh46KXDiHB9vqyuUhWnwbx";
+      } else {
+        unitPrice = 638.00;
+        bulkDiscount = 0;
+        priceId = "price_1SAfGiKXDiHB9vqy69zu2AbV";
+      }
+      
       return {
         name: 'Starlight 65W EM',
         subtitle: 'Engineering Model',
         unitPrice: unitPrice,
-        bulkDiscount: qty >= 100 ? 20 : 0,
-        priceId: qty >= 100 ? "price_1SAfGwKXDiHB9vqyZK6u2ro5" : "price_1SAfGiKXDiHB9vqy69zu2AbV"
+        bulkDiscount: bulkDiscount,
+        priceId: priceId
       };
     }
   };
@@ -60,7 +93,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       quantity: 1,
       unitPrice: specs.unitPrice,
       totalPrice: specs.unitPrice,
-      tier: 'standard',
+      tier: 1 >= 100 ? 'bulk' : 1 >= 10 ? 'volume' : 'standard',
       discount: specs.bulkDiscount,
       priceId: specs.priceId
     };
@@ -159,7 +192,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       quantity: validQuantity,
       unitPrice: specs.unitPrice,
       totalPrice: specs.unitPrice * validQuantity,
-      tier: validQuantity >= 100 ? 'bulk' : 'standard',
+      tier: validQuantity >= 100 ? 'bulk' : validQuantity >= 10 ? 'volume' : 'standard',
       discount: specs.bulkDiscount,
       priceId: specs.priceId
     };
@@ -247,7 +280,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       quantity: quantity,
       unitPrice: specs.unitPrice,
       totalPrice: specs.unitPrice * quantity,
-      tier: quantity >= 100 ? 'bulk' : 'standard',
+      tier: quantity >= 100 ? 'bulk' : quantity >= 10 ? 'volume' : 'standard',
       discount: specs.bulkDiscount,
       priceId: specs.priceId
     };
@@ -296,7 +329,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
           {getProductSpecs(selectedProduct, quantity).subtitle} • {formatCurrency(pricing.unitPrice)}/unit
         </motion.p>
         <AnimatePresence>
-          {pricing.tier === 'bulk' && (
+          {(pricing.tier === 'bulk' || pricing.tier === 'volume') && (
             <motion.div 
               className="volume-discount-badge"
               initial={{ opacity: 0, scale: 0.8, y: -10 }}
@@ -305,7 +338,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
               {/* <span className="discount-icon">🎉</span> */}
-              <span>20% Volume Discount</span>
+              <span>{pricing.discount}% Volume Discount</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -366,9 +399,42 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
           ))}
         </div>
 
-        {/* Volume Discount Upsell */}
+        {/* Volume Discount Upsells */}
         <AnimatePresence>
-          {quantity < 100 && (
+          {quantity < 10 && (
+            <motion.div 
+              className="volume-upsell" 
+              onClick={() => handleQuantityChange(10)}
+              initial={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
+              animate={{ opacity: 1, maxHeight: 200, scale: 1 }}
+              exit={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <div className="upsell-content">
+                {/* <div className="upsell-icon">💰</div> */}
+                <div className="upsell-text">
+                  <div className="upsell-title">Save 10%+ with volume pricing</div>
+                  <div className="upsell-subtitle">Order 10+ units to unlock volume discounts</div>
+                </div>
+                <motion.div 
+                  className="upsell-arrow"
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16">
+                    <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  </svg>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <AnimatePresence>
+          {quantity >= 10 && quantity < 100 && (
             <motion.div 
               className="volume-upsell" 
               onClick={() => handleQuantityChange(100)}
@@ -384,7 +450,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
                 {/* <div className="upsell-icon">💰</div> */}
                 <div className="upsell-text">
                   <div className="upsell-title">Save 20% with bulk ordering</div>
-                  <div className="upsell-subtitle">Order 100+ units to unlock volume pricing</div>
+                  <div className="upsell-subtitle">Order 100+ units to unlock maximum savings</div>
                 </div>
                 <motion.div 
                   className="upsell-arrow"
