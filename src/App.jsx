@@ -137,6 +137,18 @@ const App = () => {
   // Extract stable values to prevent object reference changes from causing re-renders
   const quantity = orderData.quantity;
   const priceId = orderData.priceId;
+  
+  // Add a session refresh counter to force new sessions when quantity changes
+  const [sessionRefreshKey, setSessionRefreshKey] = useState(0);
+  
+  // Update refresh key when quantity or price changes, with debouncing to prevent excessive requests
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSessionRefreshKey(prev => prev + 1);
+    }, 500); // 500ms debounce to prevent rapid session creation
+    
+    return () => clearTimeout(timer);
+  }, [quantity, priceId]);
 
   // Create a stable function to fetch client secret - use useCallback to prevent infinite re-renders
   const fetchClientSecret = useCallback(async () => {
@@ -148,7 +160,8 @@ const App = () => {
         },
         body: JSON.stringify({
           quantity: quantity,
-          priceId: priceId
+          priceId: priceId,
+          sessionKey: sessionRefreshKey // Include refresh key to ensure new session
         }),
       });
       
@@ -161,7 +174,7 @@ const App = () => {
     } catch (error) {
       throw error;
     }
-  }, [quantity, priceId]); // Use extracted primitive values instead of object properties
+  }, [quantity, priceId, sessionRefreshKey]); // Include sessionRefreshKey in dependencies
 
   const appearance = {
     theme: 'night',

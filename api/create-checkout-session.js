@@ -23,7 +23,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { quantity = 1, priceId } = req.body;
+    const { quantity = 1, priceId, sessionKey } = req.body;
+    
+    // Log for debugging quantity issues
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Creating Stripe session - Quantity: ${quantity}, PriceId: ${priceId}, SessionKey: ${sessionKey}`);
+    }
     
     // Determine the correct price based on quantity
     let selectedPriceId;
@@ -45,6 +50,11 @@ export default async function handler(req, res) {
         {
           price: selectedPriceId,
           quantity: quantity,
+          adjustable_quantity: {
+            enabled: true,
+            minimum: 1,
+            maximum: 1000
+          }
         },
       ],
       mode: "payment",
