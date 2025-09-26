@@ -73,6 +73,17 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  
+  // Shipping address state for custom UI
+  const [shippingAddress, setShippingAddress] = useState({
+    fullName: '',
+    company: '',
+    country: 'US',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: ''
+  });
   const [orderData, setOrderData] = useState({
     pricing: { quantity: 1, unitPrice: 638, totalPrice: 638, tier: 'standard', discount: 0 },
     shipping: { free: true, standardPrice: 0, nextDayPrice: 500 },  // No standard for qty 1
@@ -88,13 +99,31 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
     
     // Update parent order data for Stripe session creation - but only when values actually change
     if (setParentOrderData && pricing?.priceId) {
+      const calculateShippingCost = () => {
+        if (selectedShipping === 'free' || selectedShipping === 'standard') return 0;
+        if (selectedShipping === 'nextday') {
+          // Calculate Next-Day Air pricing based on tiers
+          if (quantity <= 10) return 500;
+          if (quantity <= 20) return 1000;  
+          if (quantity <= 30) return 1500;
+          
+          const additionalTiers = Math.ceil((quantity - 30) / 10);
+          return 1500 + (additionalTiers * 500);
+        }
+        return 0;
+      };
+
+      const shippingCost = calculateShippingCost();
+
       setParentOrderData(prev => {
         // Only update if the data has actually changed
-        if (prev.quantity !== quantity || prev.priceId !== pricing.priceId || prev.product !== selectedProduct) {
+        if (prev.quantity !== quantity || prev.priceId !== pricing.priceId || 
+            prev.product !== selectedProduct || prev.shippingCost !== shippingCost) {
           return {
             quantity: quantity,
             priceId: pricing.priceId,
-            product: selectedProduct
+            product: selectedProduct,
+            shippingCost: shippingCost
           };
         }
         return prev;
@@ -140,7 +169,45 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
       return;
     }
 
+    // Validate shipping address
+    if (!shippingAddress.fullName || !shippingAddress.address || 
+        !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode) {
+      setMessage('Please fill out all required shipping address fields.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Store shipping address after payment confirmation
     const confirmResult = await checkout.confirm();
+    
+    // If payment successful, send shipping address to your backend
+    if (confirmResult.type === 'success') {
+      try {
+        // Send shipping address to backend for storage
+        await fetch('/api/update-payment-shipping', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paymentIntentId: confirmResult.paymentIntent?.id,
+            sessionId: confirmResult.session?.id,
+            shippingAddress: {
+              name: shippingAddress.fullName,
+              company: shippingAddress.company,
+              address: {
+                line1: shippingAddress.address,
+                city: shippingAddress.city,
+                state: shippingAddress.state,
+                postal_code: shippingAddress.zipCode,
+                country: shippingAddress.country,
+              }
+            }
+          })
+        });
+      } catch (shippingError) {
+        console.warn('Failed to update shipping address:', shippingError);
+        // Don't fail the payment for shipping address update failures
+      }
+    }
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
@@ -234,6 +301,8 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                     <input
                       id="fullname"
                       type="text"
+                      value={shippingAddress.fullName}
+                      onChange={(e) => setShippingAddress({...shippingAddress, fullName: e.target.value})}
                       placeholder="Enter your full name"
                       required
                     />
@@ -244,6 +313,8 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                     <input
                       id="company"
                       type="text"
+                      value={shippingAddress.company}
+                      onChange={(e) => setShippingAddress({...shippingAddress, company: e.target.value})}
                       placeholder="Company or organization name"
                     />
                   </div>
@@ -251,16 +322,13 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                   <div className="form-group">
                     <label htmlFor="country">Country or region</label>
                     <div className="select-wrapper">
-                      <select id="country" defaultValue="US" required>
-                        {/* <option value="">Select a country</option> */}
-                        {/* <option value="US">🇺🇸 United States</option> */}
+                      <select 
+                        id="country" 
+                        value={shippingAddress.country}
+                        onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
+                        required
+                      >
                         <option value="US">United States</option>
-                        {/* <option value="CA">🇨🇦 Canada</option>
-                        <option value="GB">🇬🇧 United Kingdom</option>
-                        <option value="AU">🇦🇺 Australia</option>
-                        <option value="DE">🇩🇪 Germany</option>
-                        <option value="FR">🇫🇷 France</option>
-                        <option value="JP">🇯🇵 Japan</option> */}
                       </select>
                       <div className="select-arrow">
                         <svg width="12" height="8" viewBox="0 0 12 8">
@@ -274,6 +342,8 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                     <label htmlFor="address">Address</label>
                     <textarea
                       id="address"
+                      value={shippingAddress.address}
+                      onChange={(e) => setShippingAddress({...shippingAddress, address: e.target.value})}
                       placeholder="Street address, apartment, suite, etc."
                       rows="2"
                       required
@@ -283,15 +353,36 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                   <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="city">City</label>
-                      <input id="city" type="text" placeholder="City" required />
+                      <input 
+                        id="city" 
+                        type="text" 
+                        value={shippingAddress.city}
+                        onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                        placeholder="City" 
+                        required 
+                      />
                     </div>
                     <div className="form-group">
                       <label htmlFor="state">State</label>
-                      <input id="state" type="text" placeholder="State" required />
+                      <input 
+                        id="state" 
+                        type="text" 
+                        value={shippingAddress.state}
+                        onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
+                        placeholder="State" 
+                        required 
+                      />
                     </div>
                     <div className="form-group">
                       <label htmlFor="zip">ZIP code</label>
-                      <input id="zip" type="text" placeholder="ZIP code" required />
+                      <input 
+                        id="zip" 
+                        type="text" 
+                        value={shippingAddress.zipCode}
+                        onChange={(e) => setShippingAddress({...shippingAddress, zipCode: e.target.value})}
+                        placeholder="ZIP code" 
+                        required 
+                      />
                     </div>
                   </div>
                 </div>

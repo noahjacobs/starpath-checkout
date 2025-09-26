@@ -166,9 +166,6 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       initializationTimer.current = setTimeout(() => {
         if (!isInitialized.current) {
           // Remove heavy console.log to prevent mobile performance issues
-          if (process.env.NODE_ENV === 'development') {
-            console.log('OrderConfiguration: Initializing');
-          }
           onOrderChange(pricing, shipping, quantity, selectedShipping, selectedProduct);
           isInitialized.current = true;
         }

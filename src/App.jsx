@@ -130,13 +130,15 @@ const App = () => {
     return {
       quantity: 1,
       priceId: initialPriceId,
-      product: initialProduct
+      product: initialProduct,
+      shippingCost: 0
     };
   });
 
   // Extract stable values to prevent object reference changes from causing re-renders
   const quantity = orderData.quantity;
   const priceId = orderData.priceId;
+  const shippingCost = orderData.shippingCost || 0;
   
   // Add a session refresh counter to force new sessions when quantity changes
   const [sessionRefreshKey, setSessionRefreshKey] = useState(0);
@@ -148,7 +150,7 @@ const App = () => {
     }, 500); // 500ms debounce to prevent rapid session creation
     
     return () => clearTimeout(timer);
-  }, [quantity, priceId]);
+  }, [quantity, priceId, shippingCost]);
 
   // Create a stable function to fetch client secret - use useCallback to prevent infinite re-renders
   const fetchClientSecret = useCallback(async () => {
@@ -161,7 +163,9 @@ const App = () => {
         body: JSON.stringify({
           quantity: quantity,
           priceId: priceId,
-          sessionKey: sessionRefreshKey // Include refresh key to ensure new session
+          sessionKey: sessionRefreshKey, // Include refresh key to ensure new session
+          shippingCost: shippingCost,
+          // Will add shipping address when available
         }),
       });
       
@@ -174,7 +178,7 @@ const App = () => {
     } catch (error) {
       throw error;
     }
-  }, [quantity, priceId, sessionRefreshKey]); // Include sessionRefreshKey in dependencies
+  }, [quantity, priceId, shippingCost, sessionRefreshKey]); // Include sessionRefreshKey in dependencies
 
   const appearance = {
     theme: 'night',

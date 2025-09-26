@@ -23,12 +23,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { quantity = 1, priceId, sessionKey } = req.body;
+    const { quantity = 1, priceId, sessionKey, shippingCost = 0 } = req.body;
     
-    // Log for debugging quantity issues
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Creating Stripe session - Quantity: ${quantity}, PriceId: ${priceId}, SessionKey: ${sessionKey}`);
-    }
     
     // Determine the correct price based on quantity
     let selectedPriceId;
@@ -44,19 +40,37 @@ export default async function handler(req, res) {
       }
     }
 
+    // Prepare line items - include shipping as separate line item if there's a cost
+    const lineItems = [
+      {
+        price: selectedPriceId,
+        quantity: quantity,
+        adjustable_quantity: {
+          enabled: true,
+          minimum: 1,
+          maximum: 1000
+        }
+      }
+    ];
+
+    // Add shipping as a line item if there's a shipping cost
+    if (shippingCost > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Shipping',
+            description: 'Shipping and handling',
+          },
+          unit_amount: Math.round(shippingCost * 100), // Convert to cents
+        },
+        quantity: 1,
+      });
+    }
+
     const session = await stripe.checkout.sessions.create({
       ui_mode: "custom",
-      line_items: [
-        {
-          price: selectedPriceId,
-          quantity: quantity,
-          adjustable_quantity: {
-            enabled: true,
-            minimum: 1,
-            maximum: 1000
-          }
-        },
-      ],
+      line_items: lineItems,
       mode: "payment",
       payment_method_types: ['card'], // Only allow credit/debit cards
       return_url: `${YOUR_DOMAIN}/complete?session_id={CHECKOUT_SESSION_ID}`,
@@ -66,7 +80,8 @@ export default async function handler(req, res) {
     res.status(200).json({ 
       clientSecret: session.client_secret,
       quantity: quantity,
-      priceId: selectedPriceId
+      priceId: selectedPriceId,
+      shippingCost: shippingCost
     });
   } catch (error) {
     console.error('Error creating checkout session:', error);
