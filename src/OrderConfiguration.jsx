@@ -38,15 +38,15 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       if (qty >= 100) {
         unitPrice = 716.80;
         bulkDiscount = 20;
-        priceId = "price_1SAxDaKXDiHB9vqyDjybl3fP";
+        priceId = "price_1SAxDaKXDiHB9vqyDjybl3fP"; // 80W FM Bulk (20% off)
       } else if (qty >= 10) {
         unitPrice = 806.40;
         bulkDiscount = 10;
-        priceId = "price_1SBh5zKXDiHB9vqyJAyKXGa0";
+        priceId = "price_1SBh5zKXDiHB9vqyJAyKXGa0"; // 80W FM Volume (10% off)
       } else {
         unitPrice = 896.00;
         bulkDiscount = 0;
-        priceId = "price_1SAxDBKXDiHB9vqyNg9Bkop5";
+        priceId = "price_1SAxDBKXDiHB9vqyNg9Bkop5"; // 80W FM Standard
       }
       
       return {
@@ -65,15 +65,15 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       if (qty >= 100) {
         unitPrice = 510.40;
         bulkDiscount = 20;
-        priceId = "price_1SAfGwKXDiHB9vqyZK6u2ro5";
+        priceId = "price_1SAfGwKXDiHB9vqyZK6u2ro5"; // 65W EM Bulk (20% off)
       } else if (qty >= 10) {
         unitPrice = 574.20;
         bulkDiscount = 10;
-        priceId = "price_1SBh46KXDiHB9vqyuUhWnwbx";
+        priceId = "price_1SBh46KXDiHB9vqyuUhWnwbx"; // 65W EM Volume (10% off)
       } else {
         unitPrice = 638.00;
         bulkDiscount = 0;
-        priceId = "price_1SAfGiKXDiHB9vqy69zu2AbV";
+        priceId = "price_1SAfGiKXDiHB9vqy69zu2AbV"; // 65W EM Standard
       }
       
       return {
@@ -165,7 +165,6 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
       // Debounce the initialization call to prevent rapid-fire calls
       initializationTimer.current = setTimeout(() => {
         if (!isInitialized.current) {
-          // Remove heavy console.log to prevent mobile performance issues
           onOrderChange(pricing, shipping, quantity, selectedShipping, selectedProduct);
           isInitialized.current = true;
         }

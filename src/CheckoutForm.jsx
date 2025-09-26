@@ -1,43 +1,33 @@
 import React, { useState, useCallback } from "react";
 import {
   PaymentElement,
-  useCheckout
-} from '@stripe/react-stripe-js/checkout';
+  AddressElement,
+  useStripe,
+  useElements
+} from '@stripe/react-stripe-js';
 import OrderSummary from './OrderSummary';
 import OrderConfiguration from './OrderConfiguration';
 import ImageCarousel from './ImageCarousel';
 import { formatCurrency } from './utils/formatting';
 
-const validateEmail = async (email, checkout) => {
-  const updateResult = await checkout.updateEmail(email);
-  const isValid = updateResult.type !== "error";
-
-  return { isValid, message: !isValid ? updateResult.error.message : null };
+const validateEmail = async (email) => {
+  // Simple email validation since we're using direct Elements
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValid = emailRegex.test(email);
+  
+  return { 
+    isValid, 
+    message: !isValid ? 'Please enter a valid email address' : null 
+  };
 }
 
 const EmailInput = ({ email, setEmail, error, setError, placeholder }) => {
-  const checkoutState = useCheckout();
-  if (checkoutState.type === 'loading') {
-    return (
-      <div className="email-loading">
-        <div className="loading-spinner"></div>
-      </div>
-    );
-  } else if (checkoutState.type === 'error') {
-    return (
-      <div className="email-error">
-        <p>Error: {checkoutState.error.message}</p>
-      </div>
-    );
-  }
-  const {checkout} = checkoutState;
-
   const handleBlur = async () => {
     if (!email) {
       return;
     }
 
-    const { isValid, message } = await validateEmail(email, checkout);
+    const { isValid, message } = await validateEmail(email);
     if (!isValid) {
       setError(message);
     }
@@ -74,16 +64,8 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
   const [isLoading, setIsLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   
-  // Shipping address state for custom UI
-  const [shippingAddress, setShippingAddress] = useState({
-    fullName: '',
-    company: '',
-    country: 'US',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: ''
-  });
+  // Company field separate from AddressElement since it's not natively supported
+  const [company, setCompany] = useState('');
   const [orderData, setOrderData] = useState({
     pricing: { quantity: 1, unitPrice: 638, totalPrice: 638, tier: 'standard', discount: 0 },
     shipping: { free: true, standardPrice: 0, nextDayPrice: 500 },  // No standard for qty 1
@@ -119,38 +101,30 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
         // Only update if the data has actually changed
         if (prev.quantity !== quantity || prev.priceId !== pricing.priceId || 
             prev.product !== selectedProduct || prev.shippingCost !== shippingCost) {
-          return {
+          const newData = {
             quantity: quantity,
             priceId: pricing.priceId,
             product: selectedProduct,
             shippingCost: shippingCost
           };
+          return newData;
         }
         return prev;
       });
     }
   }, [setParentOrderData]); // Empty dependencies - setParentOrderData should be stable from parent
 
-  const checkoutState = useCheckout();
-  
-  if (checkoutState.type === 'loading') {
-    return (
-      <div className="checkout-loading">
-        <div className="loading-spinner-container">
-          <div className="checkout-spinner"></div>
-        </div>
-      </div>
-    );
-  } else if (checkoutState.type === 'error') {
-    return (
-      <div>Error: {checkoutState.error.message}</div>
-    );
-  }
-  const {checkout} = checkoutState;
+  const stripe = useStripe();
+  const elements = useElements();
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    if (!e.defaultPrevented) {
+      return;
+    }
 
     setIsLoading(true);
 
@@ -161,7 +135,7 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
       return;
     }
 
-    const { isValid, message } = await validateEmail(email, checkout);
+    const { isValid, message } = await validateEmail(email);
     if (!isValid) {
       setEmailError(message);
       setMessage(message);
@@ -169,56 +143,63 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
       return;
     }
 
-    // Validate shipping address
-    if (!shippingAddress.fullName || !shippingAddress.address || 
-        !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode) {
-      setMessage('Please fill out all required shipping address fields.');
-      setIsLoading(false);
-      return;
-    }
-
-    // Store shipping address after payment confirmation
-    const confirmResult = await checkout.confirm();
-    
-    // If payment successful, send shipping address to your backend
-    if (confirmResult.type === 'success') {
-      try {
-        // Send shipping address to backend for storage
-        await fetch('/api/update-payment-shipping', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            paymentIntentId: confirmResult.paymentIntent?.id,
-            sessionId: confirmResult.session?.id,
-            shippingAddress: {
-              name: shippingAddress.fullName,
-              company: shippingAddress.company,
-              address: {
-                line1: shippingAddress.address,
-                city: shippingAddress.city,
-                state: shippingAddress.state,
-                postal_code: shippingAddress.zipCode,
-                country: shippingAddress.country,
-              }
-            }
-          })
-        });
-      } catch (shippingError) {
-        console.warn('Failed to update shipping address:', shippingError);
-        // Don't fail the payment for shipping address update failures
+    try {
+      // Calculate shipping cost
+      const currentShippingCost = orderData.selectedShipping === 'nextday' ? 
+        (orderData.quantity <= 10 ? 500 : 
+         orderData.quantity <= 20 ? 1000 : 
+         orderData.quantity <= 30 ? 1500 : 
+         1500 + (Math.ceil((orderData.quantity - 30) / 10) * 500)) : 0;
+      
+      // Create PaymentIntent with current data
+      
+      // Create PaymentIntent with current order data
+      const paymentResponse = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quantity: orderData.quantity,
+          priceId: orderData.pricing.priceId,
+          shippingCost: currentShippingCost,
+          email: email,
+          company: company
+        })
+      });
+      
+      if (!paymentResponse.ok) {
+        throw new Error(`PaymentIntent creation failed: ${paymentResponse.status}`);
       }
+      
+      const paymentData = await paymentResponse.json();
+      // console.log('✅ PaymentIntent created with quantity:', paymentData.quantity);
+      
+      // Step 1: Submit elements first (required by Stripe)
+      // console.log('1️⃣ Submitting elements...');
+      const submitResult = await elements.submit();
+      if (submitResult.error) {
+        throw new Error(submitResult.error.message);
+      }
+      // console.log('✅ Elements submitted successfully');
+      
+      // Step 2: Confirm payment with current form data
+      // console.log('2️⃣ Confirming payment...');
+      const result = await stripe.confirmPayment({
+        elements,
+        clientSecret: paymentData.client_secret,
+        confirmParams: {
+          return_url: `${window.location.origin}/complete?payment_intent={PAYMENT_INTENT_ID}`,
+        }
+      });
+      
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+      
+    } catch (error) {
+      console.error('Payment failed:', error);
+      setMessage(`❌ Payment failed: ${error.message}`);
+      setIsLoading(false);
     }
-
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
-    if (confirmResult.type === 'error') {
-      setMessage(confirmResult.error.message);
-    }
-
-    setIsLoading(false);
   };
 
   return (
@@ -277,7 +258,13 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
           <div 
             className="checkout-form-section"
           >
-            <form id="checkout-form" onSubmit={handleSubmit}>
+            <form 
+              id="checkout-form" 
+              onSubmit={handleSubmit} 
+              noValidate
+              onReset={(e) => e.preventDefault()}
+              style={{overflow: 'hidden'}}
+            >
               <div 
                 className="form-section"
               >
@@ -295,97 +282,22 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
                 className="form-section"
               >
                 <h3>Shipping address</h3>
-                <div className="shipping-form">
-                  <div className="form-group">
-                    <label htmlFor="fullname">Full name</label>
-                    <input
-                      id="fullname"
-                      type="text"
-                      value={shippingAddress.fullName}
-                      onChange={(e) => setShippingAddress({...shippingAddress, fullName: e.target.value})}
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="company">Company (optional)</label>
-                    <input
-                      id="company"
-                      type="text"
-                      value={shippingAddress.company}
-                      onChange={(e) => setShippingAddress({...shippingAddress, company: e.target.value})}
-                      placeholder="Company or organization name"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="country">Country or region</label>
-                    <div className="select-wrapper">
-                      <select 
-                        id="country" 
-                        value={shippingAddress.country}
-                        onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
-                        required
-                      >
-                        <option value="US">United States</option>
-                      </select>
-                      <div className="select-arrow">
-                        <svg width="12" height="8" viewBox="0 0 12 8">
-                          <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="address">Address</label>
-                    <textarea
-                      id="address"
-                      value={shippingAddress.address}
-                      onChange={(e) => setShippingAddress({...shippingAddress, address: e.target.value})}
-                      placeholder="Street address, apartment, suite, etc."
-                      rows="2"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="city">City</label>
-                      <input 
-                        id="city" 
-                        type="text" 
-                        value={shippingAddress.city}
-                        onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                        placeholder="City" 
-                        required 
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="state">State</label>
-                      <input 
-                        id="state" 
-                        type="text" 
-                        value={shippingAddress.state}
-                        onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
-                        placeholder="State" 
-                        required 
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="zip">ZIP code</label>
-                      <input 
-                        id="zip" 
-                        type="text" 
-                        value={shippingAddress.zipCode}
-                        onChange={(e) => setShippingAddress({...shippingAddress, zipCode: e.target.value})}
-                        placeholder="ZIP code" 
-                        required 
-                      />
-                    </div>
-                  </div>
+                
+                <div className="form-group">
+                  <label htmlFor="company">Company (optional)</label>
+                  <input
+                    id="company"
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="Company or organization name"
+                  />
                 </div>
+                
+                <AddressElement 
+                  id="address-element"
+                  options={{mode: 'shipping'}}
+                />
               </div>
 
               <div 
@@ -424,8 +336,9 @@ const CheckoutForm = ({ orderData: parentOrderData, setOrderData: setParentOrder
               
               <button 
                 disabled={isLoading || !orderData.pricing || !acceptedTerms} 
-                type="submit" 
+                type="button"
                 className="form-submit-button"
+                onClick={handleSubmit}
               >
                 {isLoading ? (
                   <div className="button-spinner"></div>

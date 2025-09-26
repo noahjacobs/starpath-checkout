@@ -26,6 +26,7 @@ html, body {
   background: var(--bg-primary);
   color: var(--text-primary);
   max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Only use font smoothing on desktop to reduce mobile rendering load */
@@ -47,6 +48,7 @@ body {
   min-height: 100vh;
   padding: 20px;
   max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Only use font smoothing on desktop to reduce mobile rendering load */
@@ -2602,6 +2604,31 @@ h2 {
   margin: 0;
   color: #30313D;
   text-align: center;
+}
+
+#status-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 16px 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Success state styling */
+#payment-status:has(#status-icon[style*="#30B130"]) #status-text {
+  background: linear-gradient(135deg, #30d158 0%, #34c759 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(48, 209, 88, 0.2);
+}
+
+/* Error state styling */
+#payment-status:has(#status-icon[style*="#DF1B41"]) #status-text {
+  color: var(--accent-red);
+  font-weight: 600;
 }
 
 a {

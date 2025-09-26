@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {loadStripe} from '@stripe/stripe-js';
 import {
-  CheckoutProvider
-} from '@stripe/react-stripe-js/checkout';
+  Elements
+} from '@stripe/react-stripe-js';
 import {
   BrowserRouter as Router,
   Route,
@@ -43,8 +43,14 @@ const Complete = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const sessionId = urlParams.get('session_id');
+    const paymentIntentId = urlParams.get('payment_intent');
 
-    fetch(`/api/session-status?session_id=${sessionId}`)
+    // Use PaymentIntent status if available, otherwise fall back to session
+    const statusUrl = paymentIntentId 
+      ? `/api/payment-status?payment_intent_id=${paymentIntentId}`
+      : `/api/session-status?session_id=${sessionId}`;
+
+    fetch(statusUrl)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -124,61 +130,18 @@ const App = () => {
     const initialProduct = getInitialProduct();
     // Set initial price ID based on product
     const initialPriceId = initialProduct === '80W_FM' 
-      ? "price_1SAxDBKXDiHB9vqyNg9Bkop5" 
-      : "price_1SAfGiKXDiHB9vqy69zu2AbV";
+      ? "price_1SAxDBKXDiHB9vqyNg9Bkop5"  // 80W FM Standard
+      : "price_1SAfGiKXDiHB9vqy69zu2AbV"; // 65W EM Standard
     
     return {
       quantity: 1,
       priceId: initialPriceId,
       product: initialProduct,
-      shippingCost: 0
+      shippingCost: 0,
+      forceRefresh: 0
     };
   });
 
-  // Extract stable values to prevent object reference changes from causing re-renders
-  const quantity = orderData.quantity;
-  const priceId = orderData.priceId;
-  const shippingCost = orderData.shippingCost || 0;
-  
-  // Add a session refresh counter to force new sessions when quantity changes
-  const [sessionRefreshKey, setSessionRefreshKey] = useState(0);
-  
-  // Update refresh key when quantity or price changes, with debouncing to prevent excessive requests
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSessionRefreshKey(prev => prev + 1);
-    }, 500); // 500ms debounce to prevent rapid session creation
-    
-    return () => clearTimeout(timer);
-  }, [quantity, priceId, shippingCost]);
-
-  // Create a stable function to fetch client secret - use useCallback to prevent infinite re-renders
-  const fetchClientSecret = useCallback(async () => {
-    try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          quantity: quantity,
-          priceId: priceId,
-          sessionKey: sessionRefreshKey, // Include refresh key to ensure new session
-          shippingCost: shippingCost,
-          // Will add shipping address when available
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data.clientSecret;
-    } catch (error) {
-      throw error;
-    }
-  }, [quantity, priceId, shippingCost, sessionRefreshKey]); // Include sessionRefreshKey in dependencies
 
   const appearance = {
     theme: 'night',
@@ -190,11 +153,14 @@ const App = () => {
   return (
     <div className="App">
       <Router>
-        <CheckoutProvider
+        <Elements
           stripe={stripePromise}
-          options={{
-            fetchClientSecret: fetchClientSecret,    
-            elementsOptions: {appearance},
+          options={{ 
+            mode: 'payment',
+            currency: 'usd',
+            amount: Math.max(63800, orderData.quantity * 63800), // Minimum amount for Elements
+            payment_method_types: ['card'], // Only allow credit/debit cards
+            appearance 
           }}
         >
           <Routes>
@@ -203,7 +169,7 @@ const App = () => {
             <Route path="/checkout/preorder" element={<CheckoutForm orderData={{...orderData, product: '80W_FM'}} setOrderData={setOrderData} />} />
             <Route path="/complete" element={<Complete />} />
           </Routes>
-        </CheckoutProvider>
+        </Elements>
       </Router>
       {process.env.NODE_ENV === 'production' && <Analytics />}
     </div>

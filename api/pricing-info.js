@@ -26,16 +26,25 @@ export default function handler(req, res) {
         quantity: qty,
         unitPrice: 716.80, // $716.80 per unit for 100+ (20% discount off $896)
         totalPrice: 716.80 * qty,
-        priceId: "price_1SAxDaKXDiHB9vqyDjybl3fP",
+        priceId: "price_1SAxDaKXDiHB9vqyDjybl3fP", // 80W FM Bulk
         tier: "bulk",
         discount: 20
+      };
+    } else if (qty >= 10) {
+      priceInfo = {
+        quantity: qty,
+        unitPrice: 806.40, // $806.40 per unit for 10-99 (10% discount off $896)
+        totalPrice: 806.40 * qty,
+        priceId: "price_1SBh5zKXDiHB9vqyJAyKXGa0", // 80W FM Volume
+        tier: "volume",
+        discount: 10
       };
     } else {
       priceInfo = {
         quantity: qty,
-        unitPrice: 896.00, // $896 per unit for 1-99
+        unitPrice: 896.00, // $896 per unit for 1-9
         totalPrice: 896.00 * qty,
-        priceId: "price_1SAxDBKXDiHB9vqyNg9Bkop5",
+        priceId: "price_1SAxDBKXDiHB9vqyNg9Bkop5", // 80W FM Standard
         tier: "standard",
         discount: 0
       };
@@ -47,16 +56,25 @@ export default function handler(req, res) {
         quantity: qty,
         unitPrice: 510.40, // $510.40 per unit for 100+ (20% discount off $638)
         totalPrice: 510.40 * qty,
-        priceId: "price_1SAfGwKXDiHB9vqyZK6u2ro5",
+        priceId: "price_1SAfGwKXDiHB9vqyZK6u2ro5", // 65W EM Bulk
         tier: "bulk",
         discount: 20
+      };
+    } else if (qty >= 10) {
+      priceInfo = {
+        quantity: qty,
+        unitPrice: 574.20, // $574.20 per unit for 10-99 (10% discount off $638)
+        totalPrice: 574.20 * qty,
+        priceId: "price_1SBh46KXDiHB9vqyuUhWnwbx", // 65W EM Volume
+        tier: "volume",
+        discount: 10
       };
     } else {
       priceInfo = {
         quantity: qty,
-        unitPrice: 638.00, // $638 per unit for 1-99
+        unitPrice: 638.00, // $638 per unit for 1-9
         totalPrice: 638.00 * qty,
-        priceId: "price_1SAfGiKXDiHB9vqy69zu2AbV",
+        priceId: "price_1SAfGiKXDiHB9vqy69zu2AbV", // 65W EM Standard
         tier: "standard",
         discount: 0
       };
