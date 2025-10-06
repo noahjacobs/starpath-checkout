@@ -174,6 +174,28 @@ const OrderSummary = ({ pricing, shipping, quantity, selectedShipping = 'free', 
         </div>
       </div>
 
+      <div className="ach-discount-notice" style={{
+        fontSize: '14px',
+        color: '#ffffff',
+        textAlign: 'center',
+        marginTop: '12px',
+        paddingTop: '8px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+        whiteSpace: 'nowrap'
+      }}>
+        For orders over $20,000, contact <a 
+          href="mailto:starlight@starpath.space?subject=ACH%20Discount"
+          style={{
+            color: '#60a5fa',
+            // textDecoration: 'underline',
+            fontSize: '14px',
+            display: 'inline'
+          }}
+        >
+          starlight@starpath.space
+        </a> for ACH discounts
+      </div>
+
     </div>
   );
 };
