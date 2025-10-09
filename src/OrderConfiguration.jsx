@@ -179,7 +179,11 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
   }, [pricing, shipping, onOrderChange, quantity, selectedShipping, selectedProduct]);
 
   const handleQuantityChange = (newQuantity) => {
-    const validQuantity = Math.max(1, Math.min(1000, newQuantity));
+    // Enforce 100 unit maximum limit
+    if (newQuantity > 100) {
+      return; // Don't allow changes above 100
+    }
+    const validQuantity = Math.max(1, Math.min(100, newQuantity));
     setQuantity(validQuantity);
     
     // Calculate immediate pricing update using current product specs
@@ -368,7 +372,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
                 onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
                 className="apple-quantity-input"
                 min="1"
-                max="1000"
+                max="100"
               />
             </div>
             
@@ -383,7 +387,7 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
         </div>
         
         <div className="quantity-presets">
-          {[10, 100, 1000].map(preset => (
+          {[10, 100].map(preset => (
             <button 
               key={preset}
               type="button" 
@@ -396,15 +400,16 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
         </div>
 
         {/* Volume Discount Upsells */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {quantity < 10 && (
             <motion.div 
+              key="upsell-10"
               className="volume-upsell" 
               onClick={() => handleQuantityChange(10)}
-              initial={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
-              animate={{ opacity: 1, maxHeight: 200, scale: 1 }}
-              exit={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               style={{ overflow: 'hidden' }}
@@ -427,17 +432,16 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
-        
-        <AnimatePresence>
+          
           {quantity >= 10 && quantity < 100 && (
             <motion.div 
+              key="upsell-100"
               className="volume-upsell" 
               onClick={() => handleQuantityChange(100)}
-              initial={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
-              animate={{ opacity: 1, maxHeight: 200, scale: 1 }}
-              exit={{ opacity: 0, maxHeight: 0, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               style={{ overflow: 'hidden' }}
@@ -457,6 +461,27 @@ const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
                     <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" fill="none"/>
                   </svg>
                 </motion.div>
+              </div>
+            </motion.div>
+          )}
+          
+          {quantity === 100 && (
+            <motion.div 
+              key="custom-order"
+              className="volume-upsell custom-order"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              style={{ overflow: 'hidden', cursor: 'default' }}
+            >
+              <div className="upsell-content">
+                <div className="upsell-text" style={{ minWidth: '100%' }}>
+                  <div className="upsell-title">Need more than 100 units?</div>
+                  <div className="upsell-subtitle" style={{ whiteSpace: 'nowrap' }}>
+                    For larger orders, contact <a href="mailto:starlight@starpath.space" style={{ color: 'inherit', textDecoration: 'underline', fontSize: '14px', display: 'inline' }}>starlight@starpath.space</a>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}

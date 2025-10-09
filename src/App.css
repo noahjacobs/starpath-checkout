@@ -1327,9 +1327,11 @@ button:disabled {
 }
 
 .upsell-subtitle {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .upsell-arrow {
