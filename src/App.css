@@ -254,18 +254,6 @@ body {
   margin-bottom: 12px;
 }
 
-.volume-discount-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(48, 209, 88, 0.15);
-  color: var(--accent-green);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  border: 1px solid rgba(48, 209, 88, 0.3);
-}
 
 /* Section Headers */
 .section-header {
@@ -1278,70 +1266,6 @@ button:disabled {
   color: white;
 }
 
-/* Volume Upsell */
-.volume-upsell {
-  margin-top: 16px;
-  padding: 20px;
-  background: rgba(0, 122, 255, 0.06);
-  border: 1px solid rgba(0, 122, 255, 0.2);
-  border-radius: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-/* Simplified hover for desktop only */
-@media (hover: hover) and (min-width: 769px) {
-  .volume-upsell:hover {
-    background: rgba(0, 122, 255, 0.1);
-    border-color: rgba(0, 122, 255, 0.4);
-  }
-}
-
-/* Remove expensive hover effects on mobile */
-@media (max-width: 768px) {
-  .volume-upsell {
-    transition: none;
-  }
-}
-
-.upsell-content {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.upsell-icon {
-  font-size: 24px;
-  flex-shrink: 0;
-}
-
-.upsell-text {
-  flex: 1;
-}
-
-.upsell-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--accent-blue);
-  margin-bottom: 4px;
-}
-
-.upsell-subtitle {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: visible;
-}
-
-.upsell-arrow {
-  color: var(--accent-blue);
-  transition: transform 0.2s ease;
-}
-
-.volume-upsell:hover .upsell-arrow {
-  transform: translateX(2px);
-}
 
 /* Product Selection */
 .product-selection-section {
