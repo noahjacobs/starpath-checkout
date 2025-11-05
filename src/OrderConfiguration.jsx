@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { formatCurrency } from './utils/formatting';
 
 const OrderConfiguration = ({ onOrderChange, initialProduct = '65W_EM' }) => {
